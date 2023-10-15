@@ -1,10 +1,11 @@
 package com.kangui.talentsharehub.domain.auth.service;
 
 import com.kangui.talentsharehub.domain.auth.dto.request.RequestSignUp;
-import com.kangui.talentsharehub.domain.auth.entity.Users;
+import com.kangui.talentsharehub.domain.user.entity.Users;
+import com.kangui.talentsharehub.domain.user.entity.embeded.UserProfile;
 import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
-import com.kangui.talentsharehub.domain.auth.repository.UserRepository;
+import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService {
+public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -31,12 +32,14 @@ public class UserService {
                 .loginId(requestSignUp.getLoginId())
                 .password(requestSignUp.getPassword())
                 .nickname(requestSignUp.getNickname())
-                .birthDay(requestSignUp.getBirthDay())
-                .gender(requestSignUp.getGender())
-                .phoneNumber(requestSignUp.getPhoneNumber())
+                .userProfile(UserProfile.builder()
+                        .birthDay(requestSignUp.getBirthDay())
+                        .gender(requestSignUp.getGender())
+                        .phoneNumber(requestSignUp.getPhoneNumber())
+                        .build())
                 .build();
 
-        user.passwordEncode(passwordEncoder);
+        user.encodePassword(passwordEncoder);
         userRepository.save(user);
     }
 }

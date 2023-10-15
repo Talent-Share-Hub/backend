@@ -1,10 +1,10 @@
 package com.kangui.talentsharehub.global.oauth2.service;
 
-import com.kangui.talentsharehub.domain.auth.entity.Users;
-import com.kangui.talentsharehub.domain.auth.enums.SocialType;
+import com.kangui.talentsharehub.domain.user.entity.Users;
+import com.kangui.talentsharehub.domain.user.enums.SocialType;
 import com.kangui.talentsharehub.global.oauth2.OAuth2CustomUser;
 import com.kangui.talentsharehub.global.oauth2.OAuthAttributes;
-import com.kangui.talentsharehub.domain.auth.repository.UserRepository;
+import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

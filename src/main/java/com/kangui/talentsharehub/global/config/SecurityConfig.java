@@ -1,7 +1,7 @@
 package com.kangui.talentsharehub.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kangui.talentsharehub.domain.auth.repository.UserRepository;
+import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import com.kangui.talentsharehub.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.kangui.talentsharehub.global.jwt.service.JwtService;
 import com.kangui.talentsharehub.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
@@ -22,12 +22,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-
-;
 
 @Configuration
 @RequiredArgsConstructor

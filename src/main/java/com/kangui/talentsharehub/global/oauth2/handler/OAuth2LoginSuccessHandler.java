@@ -1,8 +1,8 @@
 package com.kangui.talentsharehub.global.oauth2.handler;
 
-import com.kangui.talentsharehub.domain.auth.entity.Users;
-import com.kangui.talentsharehub.domain.auth.enums.Role;
-import com.kangui.talentsharehub.domain.auth.repository.UserRepository;
+import com.kangui.talentsharehub.domain.user.entity.Users;
+import com.kangui.talentsharehub.domain.user.enums.Role;
+import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
 import com.kangui.talentsharehub.global.jwt.service.JwtService;
@@ -34,7 +34,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
         if(oAuth2User.getRole() == Role.GUEST) {
             String accessToken = jwtService.createAccessToken(oAuth2User.getLoginId());
+            String refreshToken = jwtService.createRefreshToken();
             response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
+            response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
 
             Users findUser = userRepository.findByLoginId(oAuth2User.getLoginId())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "아이디에 해당하는 유저가 없습니다."));

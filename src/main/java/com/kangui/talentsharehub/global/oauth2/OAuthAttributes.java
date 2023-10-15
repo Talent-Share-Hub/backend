@@ -1,8 +1,8 @@
 package com.kangui.talentsharehub.global.oauth2;
 
-import com.kangui.talentsharehub.domain.auth.entity.Users;
-import com.kangui.talentsharehub.domain.auth.enums.Role;
-import com.kangui.talentsharehub.domain.auth.enums.SocialType;
+import com.kangui.talentsharehub.domain.user.entity.Users;
+import com.kangui.talentsharehub.domain.user.enums.Role;
+import com.kangui.talentsharehub.domain.user.enums.SocialType;
 import com.kangui.talentsharehub.global.oauth2.userInfo.GoogleOAuth2UserInfo;
 import com.kangui.talentsharehub.global.oauth2.userInfo.KakaoOAuth2UserInfo;
 import com.kangui.talentsharehub.global.oauth2.userInfo.NaverOAuth2UserInfo;

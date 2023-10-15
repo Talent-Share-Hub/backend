@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.global.oauth2;
 
-import com.kangui.talentsharehub.domain.auth.enums.Role;
+import com.kangui.talentsharehub.domain.user.enums.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;

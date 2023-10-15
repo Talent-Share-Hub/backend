@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.global.login.handler;
 
-import com.kangui.talentsharehub.domain.auth.repository.UserRepository;
+import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import com.kangui.talentsharehub.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

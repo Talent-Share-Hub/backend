@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.domain.auth.dto.request;
 
-import com.kangui.talentsharehub.domain.auth.enums.Gender;
+import com.kangui.talentsharehub.domain.user.enums.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

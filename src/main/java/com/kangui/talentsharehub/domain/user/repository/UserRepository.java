@@ -1,7 +1,7 @@
-package com.kangui.talentsharehub.domain.auth.repository;
+package com.kangui.talentsharehub.domain.user.repository;
 
-import com.kangui.talentsharehub.domain.auth.entity.Users;
-import com.kangui.talentsharehub.domain.auth.enums.SocialType;
+import com.kangui.talentsharehub.domain.user.entity.Users;
+import com.kangui.talentsharehub.domain.user.enums.SocialType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
