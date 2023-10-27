@@ -37,5 +37,8 @@ out/
 .vscode/
 
 /src/main/resources/application.yml
-/src/main/resources/application-oauth.yml
+/src/main/resources/application-local.yml
+/src/main/resources/application-prod.yml
+/src/main/resources/application-oauth-local.yml
+/src/main/resources/application-oauth-prod.yml
 /src/main/resources/application-jwt.yml

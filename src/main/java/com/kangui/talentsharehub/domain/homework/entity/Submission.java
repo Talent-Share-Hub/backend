@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,17 +33,18 @@ public class Submission extends TimeStampedEntity {
 
     private String contents; // 제출 코멘트
 
-    private String submissionFile; // 제출 파일
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubmissionAttachmentFile> submissionAttachmentFile = new ArrayList<>();
 
     private LocalDateTime submissionDate; // 제출 일자
 
     @Builder
-    public Submission(Long id, Student student, Homework homework, String contents, String submissionFile, LocalDateTime submissionDate) {
+    public Submission(Long id, Student student, Homework homework, String contents, List<SubmissionAttachmentFile> submissionAttachmentFile, LocalDateTime submissionDate) {
         this.id = id;
         this.student = student;
         this.homework = homework;
         this.contents = contents;
-        this.submissionFile = submissionFile;
+        this.submissionAttachmentFile = submissionAttachmentFile;
         this.submissionDate = submissionDate;
     }
 }

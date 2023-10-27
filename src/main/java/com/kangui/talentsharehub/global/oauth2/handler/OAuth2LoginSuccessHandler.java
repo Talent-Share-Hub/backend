@@ -42,7 +42,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "아이디에 해당하는 유저가 없습니다."));
             findUser.authorizeUser();
 
-            response.sendRedirect("http://localhost:3002/home"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
+            response.sendRedirect("https://l1xux.github.io/TalentShareHub/signup/oauth2"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
 //            jwtService.sendAccessAndRefreshToken(response, accessToken, null);
         } else {
@@ -58,7 +58,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
         response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
 
-        response.sendRedirect("http://localhost:3002/home");
+        response.sendRedirect("https://l1xux.github.io/TalentShareHub");
 
 //        jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 //        jwtService.updateRefreshToken(oAuth2User.getLoginId(), refreshToken);
