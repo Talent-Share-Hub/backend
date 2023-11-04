@@ -1,5 +1,6 @@
 package com.kangui.talentsharehub.domain.user.entity;
 
+import com.kangui.talentsharehub.domain.user.dto.request.RequestUpdateUserById;
 import com.kangui.talentsharehub.domain.user.entity.embeded.UserProfile;
 import com.kangui.talentsharehub.domain.user.enums.Role;
 import com.kangui.talentsharehub.domain.user.enums.SocialType;
@@ -7,6 +8,7 @@ import com.kangui.talentsharehub.global.TimeStampedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -69,5 +71,19 @@ public class Users extends TimeStampedEntity {
 
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
+    }
+
+    public void updateUser(RequestUpdateUserById requestUpdateUserById, String profileImageUrl) {
+        if (StringUtils.hasText(requestUpdateUserById.getNickname())) {
+            this.nickname = requestUpdateUserById.getNickname();
+        }
+
+        if (StringUtils.hasText(requestUpdateUserById.getIntroduction())) {
+            this.introduction = requestUpdateUserById.getIntroduction();
+        }
+
+        if (StringUtils.hasText(profileImageUrl)) {
+            this.imageUrl= profileImageUrl;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.kangui.talentsharehub.domain.homework.entity;
 
 import com.kangui.talentsharehub.domain.course.entity.Course;
+import com.kangui.talentsharehub.domain.homework.dto.request.RequestUpdateHomework;
 import com.kangui.talentsharehub.global.TimeStampedEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -34,15 +35,29 @@ public class Homework extends TimeStampedEntity {
     @OneToMany(mappedBy = "homework", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HomeworkAttachmentFile> homeworkAttachmentFile = new ArrayList<>();
 
+    private LocalDateTime startDate; // 시작 일자
+
     private LocalDateTime endDate; // 마감 일자
 
     @Builder
-    public Homework(Long id, Course course, String title, String contents, List<HomeworkAttachmentFile> homeworkAttachmentFile, LocalDateTime endDate) {
-        this.id = id;
+    public Homework(Course course, String title, String contents, List<HomeworkAttachmentFile> homeworkAttachmentFile, LocalDateTime startDate, LocalDateTime endDate) {
         this.course = course;
         this.title = title;
         this.contents = contents;
         this.homeworkAttachmentFile = homeworkAttachmentFile;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void addHomeworkAttachmentFile(HomeworkAttachmentFile attachmentFile) {
+        this.homeworkAttachmentFile.add(attachmentFile);
+        attachmentFile.changeHomework(this);
+    }
+
+    public void updateHomework(String title, String contents, LocalDateTime startDate, LocalDateTime endDate) {
+        this.title = title;
+        this.contents = contents;
+        this.startDate = startDate;
         this.endDate = endDate;
     }
 }

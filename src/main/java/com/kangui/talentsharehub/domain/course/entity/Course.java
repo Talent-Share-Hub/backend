@@ -1,5 +1,6 @@
 package com.kangui.talentsharehub.domain.course.entity;
 
+import com.kangui.talentsharehub.domain.course.dto.request.RequestUpdateCourse;
 import com.kangui.talentsharehub.domain.course.entity.embeded.DateRange;
 import com.kangui.talentsharehub.domain.course.enums.CourseStatus;
 import com.kangui.talentsharehub.domain.user.entity.Users;
@@ -9,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 
@@ -23,11 +25,11 @@ public class Course extends TimeStampedEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @JoinColumn(name = "teacher_id", referencedColumnName = "user_id")
     private Users user; // 선생님 ID
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category; // 카테고리 ID
 
     private String image_url; // 강의 사진 URL
@@ -43,7 +45,9 @@ public class Course extends TimeStampedEntity {
 
     private String contact; // 연락처
 
-    private int capacity; // 수용인원
+    private int capacity; // 수용 인원
+
+    private int enrolledStudents; // 등록 인원
 
     @Enumerated(EnumType.STRING)
     private CourseStatus courseStatus; // 강의 상태
@@ -52,7 +56,7 @@ public class Course extends TimeStampedEntity {
     private DateRange dateRange; // 시작일, 종료일
 
     @Builder
-    public Course(Long id, Users user, Category category, String image_url, String title, String description, String reference, String link, String contact, int capacity, DateRange dateRange, CourseStatus courseStatus) {
+    public Course(Long id, Users user, Category category, String image_url, String title, String description, String reference, String link, String contact, int capacity, int enrolledStudents, DateRange dateRange, CourseStatus courseStatus) {
         this.id = id;
         this.user = user;
         this.category = category;
@@ -63,7 +67,25 @@ public class Course extends TimeStampedEntity {
         this.link = link;
         this.contact = contact;
         this.capacity = capacity;
+        this.enrolledStudents = enrolledStudents;
         this.dateRange = dateRange;
         this.courseStatus = courseStatus;
+    }
+
+    public void updateCourse(RequestUpdateCourse requestUpdateCourse, String courseImageUrl) {
+        this.image_url = StringUtils.hasText(courseImageUrl) ? courseImageUrl : this.image_url;
+        this.title = StringUtils.hasText(requestUpdateCourse.getTitle()) ? requestUpdateCourse.getTitle() : this.title;
+        this.description = StringUtils.hasText(requestUpdateCourse.getDescription()) ? requestUpdateCourse.getDescription() : this.description;
+        this.reference = StringUtils.hasText(requestUpdateCourse.getReference()) ? requestUpdateCourse.getReference() : this.reference;
+        this.link = StringUtils.hasText(requestUpdateCourse.getLink()) ? requestUpdateCourse.getLink() : this.link;
+        this.contact = StringUtils.hasText(requestUpdateCourse.getContact()) ? requestUpdateCourse.getContact() : this.contact;
+        this.capacity = requestUpdateCourse.getCapacity() > 0 ? requestUpdateCourse.getCapacity() : this.capacity;
+
+        if (requestUpdateCourse.getStartDate() != null && requestUpdateCourse.getEndDate() != null && !requestUpdateCourse.getStartDate().isAfter(requestUpdateCourse.getEndDate())) {
+            this.dateRange = DateRange.builder()
+                    .startDate(requestUpdateCourse.getStartDate())
+                    .endDate(requestUpdateCourse.getEndDate())
+                    .build();
+        }
     }
 }

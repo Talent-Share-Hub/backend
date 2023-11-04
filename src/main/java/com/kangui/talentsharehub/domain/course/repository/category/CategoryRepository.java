@@ -1,4 +1,4 @@
-package com.kangui.talentsharehub.domain.course.repository;
+package com.kangui.talentsharehub.domain.course.repository.category;
 
 import com.kangui.talentsharehub.domain.course.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
