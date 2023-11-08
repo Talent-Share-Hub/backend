@@ -33,8 +33,8 @@ public class ResponseUserById {
     @Schema(description = "닉네임", example = "홍길동이올시다")
     private String nickname;
 
-    @Schema(description = "프로필 이미지 URL")
-    private String imageUrl;
+    @Schema(description = "사용자 이미지 파일 URL")
+    private String userImageUrl;
 
     @Schema(description = "소개", example = "안녕하세요~ 홍길동입니다.")
     private String introduction;
@@ -47,7 +47,7 @@ public class ResponseUserById {
         this.phoneNumber = user.getUserProfile().getPhoneNumber();
         this.gender = user.getUserProfile().getGender();
         this.nickname = user.getNickname();
-        this.imageUrl = user.getImageUrl();
+        this.userImageUrl = user.getUserImageFile().getFileUrl();
         this.introduction = user.getIntroduction();
     }
 }

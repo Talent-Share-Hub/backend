@@ -3,10 +3,16 @@ package com.kangui.talentsharehub.domain.user.repository;
 import com.kangui.talentsharehub.domain.user.entity.Users;
 import com.kangui.talentsharehub.domain.user.enums.SocialType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
+
+    @Query("SELECT u FROM Users u JOIN FETCH u.userImageFile where u.id = :userId")
+    Optional<Users> findByIdWithUserImageFile(@Param("userId") Long userId);
+
     Optional<Users> findByLoginId(String loginId);
 
     Optional<Users> findByNickname(String nickname);

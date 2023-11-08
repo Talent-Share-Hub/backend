@@ -1,5 +1,6 @@
 package com.kangui.talentsharehub.domain.homework.dto.request;
 
+import com.kangui.talentsharehub.domain.course.entity.Course;
 import com.kangui.talentsharehub.domain.homework.entity.Homework;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ import java.util.List;
 @Schema(description = "과제 생성 요청")
 @Getter
 @AllArgsConstructor
-public class RequestCreateHomework {
+public class CreateHomeworkForm {
 
     @NotNull
     private Long courseId;
@@ -36,8 +37,9 @@ public class RequestCreateHomework {
 
     private List<MultipartFile> attachmentFiles;
 
-    public Homework toEntity() {
+    public Homework toEntity(Course course) {
         return Homework.builder()
+                .course(course)
                 .title(title)
                 .contents(contents)
                 .startDate(startDate)

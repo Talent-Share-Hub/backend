@@ -20,15 +20,18 @@ public class HomeworkAttachmentFile {
     @JoinColumn(name = "homework_id")
     private Homework homework;
 
-    private String fileName;
+    private String uploadFileName; // 과제 업로드 파일 이름
 
-    private String filePath;
+    private String storeFileName; // 과제 저장 파일 이름
+
+    private String fileUrl; // 과제 파일 접근 URL
 
     @Builder
-    public HomeworkAttachmentFile(Homework homework, String fileName, String filePath) {
+    public HomeworkAttachmentFile(Homework homework, String uploadFileName, String storeFileName, String fileUrl) {
         this.homework = homework;
-        this.fileName = fileName;
-        this.filePath = filePath;
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
+        this.fileUrl = fileUrl;
     }
 
     public void changeHomework(Homework homework) {

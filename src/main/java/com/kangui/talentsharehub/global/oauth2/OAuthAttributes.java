@@ -1,5 +1,6 @@
 package com.kangui.talentsharehub.global.oauth2;
 
+import com.kangui.talentsharehub.domain.user.entity.UserImageFile;
 import com.kangui.talentsharehub.domain.user.entity.Users;
 import com.kangui.talentsharehub.domain.user.enums.Role;
 import com.kangui.talentsharehub.domain.user.enums.SocialType;
@@ -90,7 +91,9 @@ public class OAuthAttributes {
                 .socialId(oAuth2UserInfo.getId())
                 .loginId("OAuth_" + UUID.randomUUID()) // JWT Token 발급하기 위한 용도 (UUID 임의 설정)
                 .nickname(oAuth2UserInfo.getNickname())
-                .imageUrl(oAuth2UserInfo.getImageUrl())
+                .userImageFile(UserImageFile.builder()
+                        .fileUrl(oAuth2UserInfo.getImageUrl())
+                        .build())
                 .role(Role.GUEST)
                 .build();
     }

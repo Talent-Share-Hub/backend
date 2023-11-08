@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,10 @@ public class NoticeController {
             @Parameter(name = "size", description = "크기", example = "10"),
     })
     @GetMapping
-    public ResponseEntity<Page<ResponseNoticePage>> getNoticePage(@RequestParam("search") String search, @RequestParam("course-id") Long courseId, Pageable pageable) {
+    public ResponseEntity<Page<ResponseNoticePage>> getNoticePage(
+            @RequestParam("search") String search,
+            @RequestParam("course-id") Long courseId,
+            Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(noticeService.getNoticePage(search, courseId, pageable));
     }
 
@@ -43,7 +47,7 @@ public class NoticeController {
 
     @Operation(summary = "공지 생성", description = "공지 생성")
     @PostMapping
-    public ResponseEntity<Long> createNotice(@RequestBody RequestNotice requestNotice) {
+    public ResponseEntity<Long> createNotice(@Valid @RequestBody RequestNotice requestNotice) {
         return ResponseEntity.status(HttpStatus.CREATED).body(noticeService.createNotice(requestNotice));
     }
 }

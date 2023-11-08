@@ -4,6 +4,8 @@ import com.kangui.talentsharehub.domain.course.entity.Course;
 import com.kangui.talentsharehub.domain.notice.entity.Notice;
 import com.kangui.talentsharehub.domain.user.entity.Users;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,15 +15,19 @@ import lombok.Getter;
 public class RequestNotice {
 
     @Schema(description = "강의 ID")
+    @NotNull
     private Long courseId;
 
     @Schema(description = "선생님 ID")
+    @NotNull
     private Long teacherId;
 
     @Schema(description = "공지 제목")
+    @NotBlank
     private String title;
 
     @Schema(description = "공지 내용")
+    @NotBlank
     private String contents;
 
     public Notice toEntity(Course course, Users user) {

@@ -24,8 +24,8 @@ public class ResponseCourseById {
     @Schema(description = "카테고리")
     private String category;
 
-    @Schema(description = "강의 이미지 url")
-    private String image_url;
+    @Schema(description = "강의 이미지 파일 url")
+    private String courseImageUrl;
 
     @Schema(description = "강의 제목")
     private String title;
@@ -61,7 +61,7 @@ public class ResponseCourseById {
         this.id = course.getId();
         this.teacherName = course.getUser().getUserProfile().getName();
         this.category = course.getCategory().getName();
-        this.image_url = course.getImage_url();
+        this.courseImageUrl = course.getCourseImageFile().getFileUrl();
         this.title = course.getTitle();
         this.description = course.getDescription();
         this.reference = course.getReference();

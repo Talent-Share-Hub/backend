@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.domain.course.entity;
 
-import com.kangui.talentsharehub.domain.course.dto.request.RequestUpdateCourse;
+import com.kangui.talentsharehub.domain.course.dto.request.UpdateCourseForm;
 import com.kangui.talentsharehub.domain.course.entity.embeded.DateRange;
 import com.kangui.talentsharehub.domain.course.enums.CourseStatus;
 import com.kangui.talentsharehub.domain.user.entity.Users;
@@ -11,8 +11,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -32,7 +30,8 @@ public class Course extends TimeStampedEntity {
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category; // 카테고리 ID
 
-    private String image_url; // 강의 사진 URL
+    @OneToOne(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private CourseImageFile courseImageFile;
 
     private String title; // 강의명
 
@@ -56,11 +55,11 @@ public class Course extends TimeStampedEntity {
     private DateRange dateRange; // 시작일, 종료일
 
     @Builder
-    public Course(Long id, Users user, Category category, String image_url, String title, String description, String reference, String link, String contact, int capacity, int enrolledStudents, DateRange dateRange, CourseStatus courseStatus) {
+    public Course(Long id, Users user, Category category, CourseImageFile courseImageFile, String title, String description, String reference, String link, String contact, int capacity, int enrolledStudents, CourseStatus courseStatus, DateRange dateRange) {
         this.id = id;
         this.user = user;
         this.category = category;
-        this.image_url = image_url;
+        this.courseImageFile = courseImageFile;
         this.title = title;
         this.description = description;
         this.reference = reference;
@@ -68,12 +67,11 @@ public class Course extends TimeStampedEntity {
         this.contact = contact;
         this.capacity = capacity;
         this.enrolledStudents = enrolledStudents;
-        this.dateRange = dateRange;
         this.courseStatus = courseStatus;
+        this.dateRange = dateRange;
     }
 
-    public void updateCourse(RequestUpdateCourse requestUpdateCourse, String courseImageUrl) {
-        this.image_url = StringUtils.hasText(courseImageUrl) ? courseImageUrl : this.image_url;
+    public void updateCourse(UpdateCourseForm requestUpdateCourse) {
         this.title = StringUtils.hasText(requestUpdateCourse.getTitle()) ? requestUpdateCourse.getTitle() : this.title;
         this.description = StringUtils.hasText(requestUpdateCourse.getDescription()) ? requestUpdateCourse.getDescription() : this.description;
         this.reference = StringUtils.hasText(requestUpdateCourse.getReference()) ? requestUpdateCourse.getReference() : this.reference;

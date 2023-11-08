@@ -19,13 +19,13 @@
 spring:
   jpa:
     hibernate:
-    #      ddl-auto: update
+          ddl-auto: create
     show-sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://211.115.222.246:3213/talent_share_hub
+    url: jdbc:mysql://localhost:3306/talentsharehub
     username: root
-    password: testtest
+    password: password
   # 구글의 경우 OAuth2 자체에서 provider에 대한 내용이 기본적으로 있지만 naver, kakao의 경우 provider에 대한 내용을 직접 추가해줘야함
   security:
     oauth2:
@@ -68,11 +68,11 @@ spring:
 
 
 file:
-  dir: /image
-  url: /image
-  course: /course
-  user: /user
-  homework: /homework
+  dir: C:/ETC/Projects/talent-share-hub-storage/
+  storage: file:///
+  course: course
+  user: user
+  homework: homework
 
 #logging.level:
 #  org.hibernate.SQL: debug

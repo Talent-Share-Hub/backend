@@ -4,6 +4,7 @@ import com.kangui.talentsharehub.domain.course.dto.CourseSearchCondition;
 import com.kangui.talentsharehub.domain.course.dto.response.QResponseCoursePage;
 import com.kangui.talentsharehub.domain.course.dto.response.ResponseCoursePage;
 import com.kangui.talentsharehub.domain.course.entity.Course;
+import com.kangui.talentsharehub.domain.course.entity.QCourseImageFile;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static com.kangui.talentsharehub.domain.course.entity.QCategory.*;
 import static com.kangui.talentsharehub.domain.course.entity.QCourse.*;
+import static com.kangui.talentsharehub.domain.course.entity.QCourseImageFile.*;
 import static com.kangui.talentsharehub.domain.rating.entity.QTotalRating.*;
 import static com.kangui.talentsharehub.domain.user.entity.QUsers.*;
 
@@ -34,8 +36,8 @@ public class CourseRepositoryImpl implements CourseCustomRepository {
                 .select(
                         new QResponseCoursePage(
                                 course.id,
-                                users.nickname.as("teacherName"),
-                                course.image_url,
+                                course.user.nickname.as("teacherName"),
+                                course.courseImageFile.fileUrl,
                                 course.title,
                                 course.capacity,
                                 course.enrolledStudents,
@@ -47,6 +49,7 @@ public class CourseRepositoryImpl implements CourseCustomRepository {
                 .from(course)
                 .leftJoin(course.user, users)
                 .leftJoin(course.category, category)
+                .leftJoin(course.courseImageFile, courseImageFile)
                 .where(
                         search(condition.getSearch()),
                         categoryEq(condition.getCategory())
@@ -59,6 +62,7 @@ public class CourseRepositoryImpl implements CourseCustomRepository {
                 .selectFrom(course)
                 .leftJoin(course.user, users)
                 .leftJoin(course.category, category)
+                .leftJoin(course.courseImageFile, courseImageFile)
                 .where(
                         search(condition.getSearch()),
                         categoryEq(condition.getCategory())

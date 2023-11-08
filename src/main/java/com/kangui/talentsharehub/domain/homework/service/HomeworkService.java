@@ -2,7 +2,7 @@ package com.kangui.talentsharehub.domain.homework.service;
 
 import com.kangui.talentsharehub.domain.course.entity.Course;
 import com.kangui.talentsharehub.domain.course.repository.course.CourseRepository;
-import com.kangui.talentsharehub.domain.homework.dto.request.RequestCreateHomework;
+import com.kangui.talentsharehub.domain.homework.dto.request.CreateHomeworkForm;
 import com.kangui.talentsharehub.domain.homework.dto.request.RequestUpdateHomework;
 import com.kangui.talentsharehub.domain.homework.dto.response.ResponseHomework;
 import com.kangui.talentsharehub.domain.homework.entity.Homework;
@@ -11,6 +11,7 @@ import com.kangui.talentsharehub.domain.homework.repository.HomeworkRepository;
 import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
 import com.kangui.talentsharehub.global.file.FileStore;
+import com.kangui.talentsharehub.global.file.UploadFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,33 +36,28 @@ public class HomeworkService {
     private final FileStore fileStore;
 
     @Transactional
-    public Long createHomework(RequestCreateHomework requestCreateHomework) {
+    public Long createHomework(CreateHomeworkForm requestCreateHomework) {
         Course course = courseRepository.findById(requestCreateHomework.getCourseId())
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의입니다."));
 
-        Homework homework = requestCreateHomework.toEntity();
+        List<UploadFile> uploadFiles = null;
 
-        List<MultipartFile> attachmentFiles = requestCreateHomework.getAttachmentFiles();
+        Homework homework = requestCreateHomework.toEntity(course);
 
-        if(attachmentFiles != null && !attachmentFiles.isEmpty()) {
-            for (MultipartFile file: attachmentFiles) {
-                String fileUrl = null;
+        try {
+            uploadFiles = fileStore.storeFiles(requestCreateHomework.getAttachmentFiles(), homeworkPath);
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
+        }
 
-                try {
-                    fileUrl = fileStore.storeFile(file, homeworkPath);
+        for (UploadFile uploadFile : uploadFiles) {
+            HomeworkAttachmentFile homeworkAttachmentFile = HomeworkAttachmentFile.builder()
+                    .uploadFileName(uploadFile.getUploadFileName())
+                    .storeFileName(uploadFile.getStoreFileName())
+                    .fileUrl(uploadFile.getFileUrl())
+                    .build();
 
-                    HomeworkAttachmentFile homeworkAttachmentFile = HomeworkAttachmentFile.builder()
-                            .fileName(file.getOriginalFilename())
-                            .filePath(fileUrl)
-                            .build();
-
-                    homework.addHomeworkAttachmentFile(homeworkAttachmentFile);
-                } catch (IOException e) {
-                    throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
-                }
-
-
-            }
+            homework.addHomeworkAttachmentFile(homeworkAttachmentFile);
         }
 
         return homeworkRepository.save(homework).getId();
@@ -71,49 +67,24 @@ public class HomeworkService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
 
-        List<Homework> homeworks = homeworkRepository.findByCourseId(courseId);
+        List<Homework> homeworks = homeworkRepository.findByCourseIdWithAttachmentFile(course.getId());
 
         return homeworks.stream()
                 .map(ResponseHomework::new)
                 .toList();
     }
 
+    @Transactional
     public Long updateHomework(Long homeworkId, RequestUpdateHomework requestUpdateHomework) {
         Homework homework = homeworkRepository.findById(homeworkId)
-                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "존재 하지 않는 과제 입니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재하지 않습니다."));
 
-        homework.updateHomework(requestUpdateHomework.getTitle(),
-                                requestUpdateHomework.getContents(),
-                                requestUpdateHomework.getStartDate(),
-                                requestUpdateHomework.getEndDate());
+        homework.updateHomework(
+                requestUpdateHomework.getTitle(),
+                requestUpdateHomework.getContents(),
+                requestUpdateHomework.getStartDate(),
+                requestUpdateHomework.getEndDate());
 
-        List<HomeworkAttachmentFile> homeworkAttachmentFiles = homework.getHomeworkAttachmentFile();
-        for (HomeworkAttachmentFile attachmentFile : homeworkAttachmentFiles) {
-            attachmentFile.getFilePath()
-        }
-
-
-        List<MultipartFile> attachmentFiles = requestUpdateHomework.getAttachmentFiles();
-
-        if(attachmentFiles != null && !attachmentFiles.isEmpty()) {
-            for (MultipartFile file: attachmentFiles) {
-                String fileUrl = null;
-
-                try {
-                    fileUrl = fileStore.storeFile(file, homeworkPath);
-
-                    HomeworkAttachmentFile homeworkAttachmentFile = HomeworkAttachmentFile.builder()
-                            .fileName(file.getOriginalFilename())
-                            .filePath(fileUrl)
-                            .build();
-
-                    homework.addHomeworkAttachmentFile(homeworkAttachmentFile);
-                } catch (IOException e) {
-                    throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
-                }
-
-
-            }
-        }
+        return homework.getId();
     }
 }

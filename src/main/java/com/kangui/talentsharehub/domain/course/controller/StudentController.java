@@ -5,6 +5,7 @@ import com.kangui.talentsharehub.domain.course.dto.response.ResponseStudentByCou
 import com.kangui.talentsharehub.domain.course.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class StudentController {
 
     @Operation(summary = "강의 수강생 등록", description = "강의 수강생 등록")
     @PostMapping("/enroll")
-    public ResponseEntity<Long> enrollStudent(@RequestBody RequestEnrollStudent requestEnrollStudent) {
+    public ResponseEntity<Long> enrollStudent(@Valid @RequestBody RequestEnrollStudent requestEnrollStudent) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.enrollStudent(requestEnrollStudent));
     }
 

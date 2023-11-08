@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.domain.homework.controller;
 
-import com.kangui.talentsharehub.domain.homework.dto.request.RequestCreateHomework;
+import com.kangui.talentsharehub.domain.homework.dto.request.CreateHomeworkForm;
 import com.kangui.talentsharehub.domain.homework.dto.request.RequestUpdateHomework;
 import com.kangui.talentsharehub.domain.homework.dto.response.ResponseHomework;
 import com.kangui.talentsharehub.domain.homework.service.HomeworkService;
@@ -24,7 +24,7 @@ public class HomeworkController {
 
     @Operation(summary = "과제 생성", description = "과제 생성")
     @PostMapping
-    public ResponseEntity<Long> createHomework(@Valid @ModelAttribute RequestCreateHomework requestCreateHomework) {
+    public ResponseEntity<Long> createHomework(@Valid @ModelAttribute CreateHomeworkForm requestCreateHomework) {
         return ResponseEntity.status(HttpStatus.CREATED).body(homeworkService.createHomework(requestCreateHomework));
     }
 
@@ -36,7 +36,9 @@ public class HomeworkController {
 
     @Operation(summary = "과제 수정", description = "homework-id에 해당하는 과제 수정")
     @PutMapping("/{homework-id}")
-    public ResponseEntity<Long> updateHomework(@PathVariable("homework-id") Long homeworkId, @RequestBody RequestUpdateHomework requestUpdateHomework) {
+    public ResponseEntity<Long> updateHomework(
+            @PathVariable("homework-id") Long homeworkId,
+            @ModelAttribute RequestUpdateHomework requestUpdateHomework) {
         return ResponseEntity.status(HttpStatus.OK).body(homeworkService.updateHomework(homeworkId, requestUpdateHomework));
     }
 }

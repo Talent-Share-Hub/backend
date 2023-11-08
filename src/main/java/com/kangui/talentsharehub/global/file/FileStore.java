@@ -8,34 +8,52 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
 public class FileStore {
 
     @Value("${file.dir}")
-    private String fileDirPath; // 파일이 저장될 디렉토리 경로
-    @Value("${file.url}")
-    private String url; // 파일에 접근할 수 있는 URL
+    private String fileDir;
+    @Value("{file.storage}")
+    private String fileStorage;
+
+    public String getFullPath(String fileName, String additionalPath) {
+        return fileDir + additionalPath + fileName;
+    }
+
+
+    public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles, String additionalPath) throws IOException {
+        List<UploadFile> storeFileResult = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            if (!multipartFile.isEmpty()) {
+                storeFileResult.add(storeFile(multipartFile, additionalPath));
+            }
+        }
+        return storeFileResult;
+    }
+
 
     // MultipartFile 저장 및 url 반환
-    public String storeFile(MultipartFile multipartFile, String additionalPath) throws IOException {
+    public UploadFile storeFile(MultipartFile multipartFile, String additionalPath) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
 
         String originalFileName = multipartFile.getOriginalFilename(); // 업로드된 파일의 원래 이름
         String storeFileName = createStoreFileName(originalFileName); // 저장될 파일의 고유한 이름
-        multipartFile.transferTo(new File(fileDirPath + additionalPath + storeFileName)); // 파일을 실제 디렉토리에 저장
+        String fileUrl = fileStorage + getFullPath(storeFileName, additionalPath); // 저장된 파일에 접근할 수 있는 URL
+        multipartFile.transferTo(new File(getFullPath(storeFileName, additionalPath))); // 파일을 실제 디렉토리에 저장
 
-        return url + storeFileName; // 저장된 파일에 접근할 수 있는 URL 반환
+        return new UploadFile(originalFileName, storeFileName, fileUrl);
     }
 
     //
-    public boolean deleteFile(String fileUrl) throws MalformedURLException {
-        URL url = new URL(fileUrl); // 파일 URL을 가지고 URL 객체 생성
+    public boolean deleteFile(String storeFileName, String additionalPath) throws MalformedURLException {
 
-        File fileToDelete = new File(url.getPath()); // URL에서 파일 경로를 추출하여 해당 파일 객체 생성
+        File fileToDelete = new File(getFullPath(storeFileName, additionalPath)); // URL에서 파일 경로를 추출하여 해당 파일 객체 생성
 
         if(fileToDelete.exists()) {
             return fileToDelete.delete(); // 파일이 존재하면 삭제하고 성공 여부 반환
@@ -49,7 +67,7 @@ public class FileStore {
         String uuid = UUID.randomUUID().toString(); // 랜덤한 UUID 생성
         String ext = extractExt(originalFileName); // 파일 확장자 추출
 
-        return originalFileName + "-" + uuid + "." + ext; // UUID와 확장자를 조합하여 고유한 파일 이름 생성
+        return uuid + "." + ext; // 고유한 파일 이름 생성
     }
 
     // 파일 이름에서 확장자 추출

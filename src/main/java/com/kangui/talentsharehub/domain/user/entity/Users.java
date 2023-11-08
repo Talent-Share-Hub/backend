@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.domain.user.entity;
 
-import com.kangui.talentsharehub.domain.user.dto.request.RequestUpdateUserById;
+import com.kangui.talentsharehub.domain.user.dto.request.UpdateUserByIdForm;
 import com.kangui.talentsharehub.domain.user.entity.embeded.UserProfile;
 import com.kangui.talentsharehub.domain.user.enums.Role;
 import com.kangui.talentsharehub.domain.user.enums.SocialType;
@@ -20,6 +20,9 @@ public class Users extends TimeStampedEntity {
     @Column(name = "user_id")
     private Long id;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserImageFile userImageFile;
+
     private String loginId; // 로그인 아이디
 
     private String password; // 비밀번호
@@ -28,8 +31,6 @@ public class Users extends TimeStampedEntity {
     private UserProfile userProfile; // 유저 정보(이름, 생년월일, 연락처, 성별)
 
     private String nickname; // 닉네임
-
-    private String imageUrl; // 프로필 이미지
 
     private String introduction; // 소개
 
@@ -46,13 +47,12 @@ public class Users extends TimeStampedEntity {
     private String refreshToken; // 리프레시 토큰
 
     @Builder
-    public Users(Long id, String loginId, String password, UserProfile userProfile, String nickname, String imageUrl, String introduction, Role role, SocialType socialType, String socialId, String refreshToken) {
-        this.id = id;
+    public Users(UserImageFile userImageFile, String loginId, String password, UserProfile userProfile, String nickname, String introduction, Role role, SocialType socialType, String socialId, String refreshToken) {
+        this.userImageFile = userImageFile;
         this.loginId = loginId;
         this.password = password;
         this.userProfile = userProfile;
         this.nickname = nickname;
-        this.imageUrl = imageUrl;
         this.introduction = introduction;
         this.role = role;
         this.socialType = socialType;
@@ -73,17 +73,13 @@ public class Users extends TimeStampedEntity {
         this.refreshToken = updateRefreshToken;
     }
 
-    public void updateUser(RequestUpdateUserById requestUpdateUserById, String profileImageUrl) {
+    public void updateUser(UpdateUserByIdForm requestUpdateUserById) {
         if (StringUtils.hasText(requestUpdateUserById.getNickname())) {
             this.nickname = requestUpdateUserById.getNickname();
         }
 
         if (StringUtils.hasText(requestUpdateUserById.getIntroduction())) {
             this.introduction = requestUpdateUserById.getIntroduction();
-        }
-
-        if (StringUtils.hasText(profileImageUrl)) {
-            this.imageUrl= profileImageUrl;
         }
     }
 }

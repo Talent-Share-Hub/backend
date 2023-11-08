@@ -12,4 +12,7 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 
     @Query("SELECT h FROM Homework h WHERE h.course.id = :courseId")
     List<Homework> findByCourseId(@Param("courseId") Long courseId);
+
+    @Query("SELECT h FROM Homework h JOIN FETCH h.homeworkAttachmentFile WHERE h.course.id = :courseId")
+    List<Homework> findByCourseIdWithAttachmentFile(@Param("courseId") Long courseId);
 }

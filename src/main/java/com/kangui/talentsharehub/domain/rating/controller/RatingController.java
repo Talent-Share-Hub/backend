@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class RatingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addRating(@RequestBody RequestRating requestRating) {
+    public ResponseEntity<Void> addRating(@Valid @RequestBody RequestRating requestRating) {
         ratingService.addRating(requestRating);
 
         return ResponseEntity.noContent().build();
