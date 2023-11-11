@@ -42,7 +42,8 @@ public class HomeworkAttachmentFileService {
     public Resource downloadAttachById(HttpServletResponse response, Long fileId) {
 
         HomeworkAttachmentFile homeworkAttachmentFile = homeworkAttachmentFileRepository.findById(fileId)
-                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_ATTACHMENT_FILE_NOT_FOUND, fileId + "과제 첨부파일이 존재하지 않습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_ATTACHMENT_FILE_NOT_FOUND
+                                                        , fileId + "과제 첨부파일이 존재하지 않습니다."));
 
         String uploadFileName = homeworkAttachmentFile.getUploadFileName();
         String storeFileName = homeworkAttachmentFile.getStoreFileName();
@@ -77,19 +78,15 @@ public class HomeworkAttachmentFileService {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
         }
 
-        return homeworkAttachmentFileRepository.save(HomeworkAttachmentFile.builder()
-                                                        .homework(homework)
-                                                        .uploadFileName(uploadFile.getUploadFileName())
-                                                        .storeFileName(uploadFile.getStoreFileName())
-                                                        .fileUrl(uploadFile.getFileUrl())
-                                                        .build()).getId();
+        return homeworkAttachmentFileRepository.save(uploadFile.toHomeworkAttachmentFile(homework)).getId();
     }
 
     @Transactional
     public void deleteAttachmentFileById(Long fileId) {
 
         HomeworkAttachmentFile homeworkAttachmentFile = homeworkAttachmentFileRepository.findById(fileId)
-                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_ATTACHMENT_FILE_NOT_FOUND, fileId + "과제 첨부파일이 존재하지 않습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_ATTACHMENT_FILE_NOT_FOUND
+                                                        , fileId + "과제 첨부파일이 존재하지 않습니다."));
 
         try {
             fileStore.deleteFile(homeworkAttachmentFile.getStoreFileName(), homeworkPath);

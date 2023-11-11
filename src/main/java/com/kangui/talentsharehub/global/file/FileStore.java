@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,9 +23,9 @@ public class FileStore {
         return fileDir + additionalPath + fileName;
     }
 
-
     public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles, String additionalPath) throws IOException {
         List<UploadFile> storeFileResult = new ArrayList<>();
+
         for (MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
                 storeFileResult.add(storeFile(multipartFile, additionalPath));
@@ -34,7 +33,6 @@ public class FileStore {
         }
         return storeFileResult;
     }
-
 
     // MultipartFile 저장 및 url 반환
     public UploadFile storeFile(MultipartFile multipartFile, String additionalPath) throws IOException {
@@ -67,7 +65,7 @@ public class FileStore {
         String uuid = UUID.randomUUID().toString(); // 랜덤한 UUID 생성
         String ext = extractExt(originalFileName); // 파일 확장자 추출
 
-        return uuid + "." + ext; // 고유한 파일 이름 생성
+        return uuid + ext; // 고유한 파일 이름 생성
     }
 
     // 파일 이름에서 확장자 추출

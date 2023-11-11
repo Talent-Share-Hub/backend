@@ -27,8 +27,7 @@ public class Student {
     private Course course; // 강의 ID
 
     @Builder
-    public Student(Long id, Users user, Course course) {
-        this.id = id;
+    public Student(Users user, Course course) {
         this.user = user;
         this.course = course;
     }

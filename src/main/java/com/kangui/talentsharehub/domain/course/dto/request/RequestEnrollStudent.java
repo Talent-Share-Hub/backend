@@ -11,12 +11,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class RequestEnrollStudent {
 
-    @Schema(description = "사용자 ID")
     @NotNull
+    @Schema(description = "사용자 ID", example = "1")
     private Long userId;
 
-    @Schema(description = "강의 ID")
     @NotNull
+    @Schema(description = "강의 ID", example = "1")
     private Long courseId;
 
 }

@@ -26,8 +26,11 @@ public class RatingController {
             @Parameter(name = "category-id", description = "카테고리 ID", example = "1"),
     })
     @GetMapping("/average")
-    public ResponseEntity<Double> getAverageRatingByUserId(@RequestParam(name = "user-id") Long userId, @RequestParam(name = "category-id") Long categoryId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ratingService.getAverageRatingByUserIdAndCategoryId(userId, categoryId));
+    public ResponseEntity<Double> getAverageRatingByUserId(
+                @RequestParam(name = "user-id") Long userId,
+                @RequestParam(name = "category-id") Long categoryId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ratingService.getAverageRatingByUserIdAndCategoryId(userId, categoryId));
     }
 
     @PostMapping

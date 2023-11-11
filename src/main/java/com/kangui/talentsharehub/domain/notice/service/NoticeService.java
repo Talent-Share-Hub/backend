@@ -36,10 +36,10 @@ public class NoticeService {
     public Long createNotice(RequestNotice requestNotice) {
         Course course = courseRepository.findById(requestNotice.getCourseId())
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
-        Users users = userRepository.findById(requestNotice.getTeacherId())
+        Users user = userRepository.findById(requestNotice.getTeacherId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재 하지 않는 사용자 입니다."));
 
-        return noticeRepository.save(requestNotice.toEntity(course, users)).getId();
+        return noticeRepository.save(requestNotice.toEntity(course, user)).getId();
     }
 
     @Transactional
@@ -47,8 +47,8 @@ public class NoticeService {
         Notice notice = noticeRepository.findByIdWithUser(noticeId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTICE_NOT_FOUND, "존재 하지 않는 공지 입니다."));
 
-        notice.changeViews(notice.getViews() + 1);
+        notice.increaseView();
 
-        return ResponseNoticeById.builder().notice(notice).build();
+        return new ResponseNoticeById(notice);
     }
 }

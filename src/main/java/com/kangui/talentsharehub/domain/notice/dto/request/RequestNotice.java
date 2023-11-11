@@ -6,6 +6,7 @@ import com.kangui.talentsharehub.domain.user.entity.Users;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,20 +15,22 @@ import lombok.Getter;
 @AllArgsConstructor
 public class RequestNotice {
 
-    @Schema(description = "강의 ID")
     @NotNull
+    @Schema(description = "강의 ID", example = "1")
     private Long courseId;
 
-    @Schema(description = "선생님 ID")
     @NotNull
+    @Schema(description = "선생님 ID", example = "1")
     private Long teacherId;
 
-    @Schema(description = "공지 제목")
     @NotBlank
+    @Size(max = 255, message = "과제 제목은 255자 이하이어야 합니다.")
+    @Schema(description = "공지 제목", example = "noticeTitle")
     private String title;
 
-    @Schema(description = "공지 내용")
     @NotBlank
+    @Size(max = 1000, message = "과제 본문은 1000자 이하이어야 합니다.")
+    @Schema(description = "공지 내용", example = "noticeContents")
     private String contents;
 
     public Notice toEntity(Course course, Users user) {

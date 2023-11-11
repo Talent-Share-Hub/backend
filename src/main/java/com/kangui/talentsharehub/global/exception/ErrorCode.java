@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     USER_DUPLICATED(HttpStatus.CONFLICT, ""),
     NICKNAME_DUPLICATED(HttpStatus.CONFLICT, ""),
+    SYLLABUS_DUPLICATED(HttpStatus.CONFLICT, ""),
 
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, ""),
     INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, ""),
@@ -25,11 +26,15 @@ public enum ErrorCode {
     COURSE_IMAGE_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
     HOMEWORK_ATTACHMENT_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
+    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
 
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, ""),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, ""),
-    FILE_DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "");
+    FILE_DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, ""),
 
-    private HttpStatus httpStatus;
-    private String message;
+    NOT_FIRST_OAUTH2_USER(HttpStatus.BAD_REQUEST, ""),
+    STUDENT_EXCEED(HttpStatus.BAD_REQUEST, "");
+
+    private final HttpStatus httpStatus;
+    private final String message;
 }

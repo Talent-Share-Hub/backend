@@ -1,5 +1,6 @@
 package com.kangui.talentsharehub.domain.user.entity;
 
+import com.kangui.talentsharehub.domain.auth.dto.request.RequestAddInfo;
 import com.kangui.talentsharehub.domain.user.dto.request.UpdateUserByIdForm;
 import com.kangui.talentsharehub.domain.user.entity.embeded.UserProfile;
 import com.kangui.talentsharehub.domain.user.enums.Role;
@@ -9,6 +10,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
+
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -41,7 +44,6 @@ public class Users extends TimeStampedEntity {
     @Enumerated(EnumType.STRING)
     private SocialType socialType; // 소셜 타입 (KAKAO, GOOGLE)
 
-    @Column(nullable = false)
     private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인의 경우 null)
 
     private String refreshToken; // 리프레시 토큰
@@ -65,6 +67,11 @@ public class Users extends TimeStampedEntity {
         this.role = Role.USER;
     }
 
+    public void changeUserImageFile(UserImageFile userImageFile) {
+        this.userImageFile = userImageFile;
+        userImageFile.changeUser(this);
+    }
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
@@ -81,5 +88,19 @@ public class Users extends TimeStampedEntity {
         if (StringUtils.hasText(requestUpdateUserById.getIntroduction())) {
             this.introduction = requestUpdateUserById.getIntroduction();
         }
+    }
+
+    public void changeNickname() {
+        this.nickname = nickname + UUID.randomUUID();
+    }
+
+    public void addInfo(RequestAddInfo requestAddInfo) {
+        this.userProfile = UserProfile.builder()
+                .name(requestAddInfo.getName())
+                .birthDay(requestAddInfo.getBirthDay())
+                .phoneNumber(requestAddInfo.getPhoneNumber())
+                .gender(requestAddInfo.getGender()).build();
+        this.nickname = requestAddInfo.getNickname();
+        this.introduction = requestAddInfo.getIntroduction();
     }
 }

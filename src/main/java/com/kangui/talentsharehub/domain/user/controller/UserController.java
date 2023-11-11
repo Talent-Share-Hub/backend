@@ -27,15 +27,17 @@ public class UserController {
 
     @Operation(summary = "회원 정보 수정", description = "해당 user-id의 회원 정보 수정")
     @PutMapping("/{user-id}")
-    public ResponseEntity<Long> updateUser(@PathVariable("user-id") Long userId, @Valid @ModelAttribute UpdateUserByIdForm updateUserByIdForm) {
+    public ResponseEntity<Long> updateUser(
+            @PathVariable("user-id") Long userId,
+            @Valid @ModelAttribute UpdateUserByIdForm updateUserByIdForm) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserById(userId, updateUserByIdForm));
     }
 
     @Operation(summary = "회원 삭제", description = "해당 user-id의 회원 삭제")
+    @DeleteMapping("/{user-id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable("user-id") Long userId) {
         userService.deleteUserById(userId);
         return ResponseEntity.noContent().build();
     }
-
 
 }

@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "과제 첨부 파일 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/homework-attachment-file")
+@RequestMapping("/api/homework-attachment-file")
 public class HomeworkAttachmentFileController {
 
     private final HomeworkAttachmentFileService homeworkAttachmentFileService;

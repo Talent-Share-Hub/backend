@@ -47,4 +47,8 @@ public class CourseImageFile {
             this.fileUrl= fileUrl;
         }
     }
+
+    public void changeCourse(Course course) {
+        this.course = course;
+    }
 }

@@ -40,12 +40,18 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-    private final CourseImageFileRepository courseImageFileRepository;
     private final FileStore fileStore;
 
-    // 강의 조회(페이지네이션)
+
     public Page<ResponseCoursePage> getCoursePage(CourseSearchCondition courseSearchCondition, Pageable pageable) {
         return courseRepository.getCoursePage(courseSearchCondition, pageable);
+    }
+
+    public ResponseCourseById getCourseById(Long courseId) {
+        Course course = courseRepository.findCourseWithUserAndCategoryAndCourseImageFileById(courseId)
+                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재하지 않는 강의입니다."));
+
+        return new ResponseCourseById(course);
     }
 
     @Transactional
@@ -53,6 +59,12 @@ public class CourseService {
         if (!createCourseForm.getStartDate().isAfter(createCourseForm.getEndDate())) {
             throw new AppException(ErrorCode.INVALID_DATE_RANGE, "종료 일이 시작 일보다 빠를 수 없습니다.");
         }
+
+        Users teacher = userRepository.findById(createCourseForm.getTeacherId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 선생님입니다."));
+
+        Category category = categoryRepository.findById(createCourseForm.getCategoryId())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND, "존재하지 않는 카테고리입니다."));
 
         UploadFile uploadFile = null;
 
@@ -63,24 +75,12 @@ public class CourseService {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "강의 이미지 생성에 실패 했습니다.");
         }
 
-        Users teacher = userRepository.findById(createCourseForm.getTeacherId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 선생님입니다."));
+        Course course = createCourseForm.toEntity(teacher, category);
+        CourseImageFile courseImageFile = uploadFile.toCourseImageFile();
+        course.changeCourseImageFile(courseImageFile);
 
-        Category category = categoryRepository.findById(createCourseForm.getCategoryId())
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND, "존재하지 않는 카테고리입니다."));
+        return courseRepository.save(course).getId();
 
-        CourseImageFile courseImageFile = CourseImageFile.builder()
-                .storeFileName(uploadFile.getStoreFileName())
-                .uploadFileName(uploadFile.getUploadFileName())
-                .fileUrl(uploadFile.getFileUrl())
-                .build();
-
-        return courseRepository.save(createCourseForm.toEntity(teacher, category, courseImageFile)).getId();
-
-    }
-
-    public ResponseCourseById getCourseById(Long courseId) {
-        return new ResponseCourseById(courseRepository.findCourseWithUserAndCategoryAndCourseImageFileById(courseId));
     }
 
     @Transactional
@@ -103,7 +103,9 @@ public class CourseService {
         }
 
         course.updateCourse(updateCourseForm);
-        course.getCourseImageFile().updateImageFile(uploadFile.getUploadFileName(), uploadFile.getStoreFileName(), uploadFile.getFileUrl());
+        course.getCourseImageFile().updateImageFile(uploadFile.getUploadFileName(),
+                                                    uploadFile.getStoreFileName(),
+                                                    uploadFile.getFileUrl());
 
         return courseId;
     }

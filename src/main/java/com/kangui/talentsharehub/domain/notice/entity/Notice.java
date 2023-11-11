@@ -44,7 +44,7 @@ public class Notice extends TimeStampedEntity {
         this.views = views;
     }
 
-    public void changeViews(int newView) {
-        this.views = newView;
+    public void increaseView() {
+        this.views += 1;
     }
 }

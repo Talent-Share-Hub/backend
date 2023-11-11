@@ -86,4 +86,17 @@ public class Course extends TimeStampedEntity {
                     .build();
         }
     }
+
+    public void changeCourseImageFile(CourseImageFile courseImageFile) {
+        this.courseImageFile = courseImageFile;
+        courseImageFile.changeCourse(this);
+    }
+
+    public boolean isFull() {
+        return enrolledStudents >= capacity;
+    }
+
+    public void incrementEnrollStudents() {
+        this.enrolledStudents += 1;
+    }
 }

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,20 +43,20 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(coursePage);
     }
 
-    @Operation(summary = "강의 생성", description = "강의 생성")
-    @PostMapping
-    public ResponseEntity<Long> createCourse(@Valid @ModelAttribute CreateCourseForm createCourseForm){
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(createCourseForm));
-    }
-
     @Operation(summary = "강의 조회", description = "course-id에 해당하는 강의 조회")
     @GetMapping("/{course-id}")
     public ResponseEntity<ResponseCourseById> getCourseById(@PathVariable("course-id") Long courseId) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.getCourseById(courseId));
     }
 
+    @Operation(summary = "강의 생성", description = "강의 생성")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> createCourse(@Valid @ModelAttribute CreateCourseForm createCourseForm){
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(createCourseForm));
+    }
+
     @Operation(summary = "강의 수정", description = "course-id에 해당하는 강의 수정")
-    @PutMapping("/{course-id}")
+    @PutMapping(value = "/{course-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateCourseById(
             @PathVariable("course-id") Long courseId,
             @Valid @ModelAttribute UpdateCourseForm updateCourseForm) {

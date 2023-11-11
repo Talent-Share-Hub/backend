@@ -48,4 +48,8 @@ public class UserImageFile {
             this.fileUrl= fileUrl;
         }
     }
+
+    public void changeUser(Users user) {
+        this.user = user;
+    }
 }

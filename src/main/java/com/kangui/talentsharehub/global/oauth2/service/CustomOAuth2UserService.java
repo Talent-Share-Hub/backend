@@ -2,7 +2,7 @@ package com.kangui.talentsharehub.global.oauth2.service;
 
 import com.kangui.talentsharehub.domain.user.entity.Users;
 import com.kangui.talentsharehub.domain.user.enums.SocialType;
-import com.kangui.talentsharehub.global.oauth2.OAuth2CustomUser;
+import com.kangui.talentsharehub.global.oauth2.CustomOAuth2User;
 import com.kangui.talentsharehub.global.oauth2.OAuthAttributes;
 import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +27,13 @@ import java.util.Map;
 // JwtService 통해 실제 사용될 access token을 발급하게 된다. (oauth 동작 과정에서의 access token과는 다르다)
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final UserRepository userRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        log.info("OAuth2 로그인 요청 진입");
 
         OAuth2UserService<OAuth2UserRequest, OAuth2User> service = new DefaultOAuth2UserService();
         // OAuth 서비스에서 가져온 유저 정보를 담고 있는 객체
@@ -51,17 +51,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 소셜 로그인에서 API가 제공하는 userInfo의 JSON 값 (유저 정보들)
         Map<String, Object> originAttributes = oAuth2User.getAttributes();
 
-        // OAuth2UserService를 통해 가져온 OAuth2User의 attribute를 서비스 유형에 맞게 담을 클래스
-        // oAuth2User.getAttributes() : OAuth2User의 attribute
-        OAuthAttributes attributes = OAuthAttributes
-                .of(socialType, userNameAttributeName, originAttributes);
+        // socialType에 따라 유저 정보를 통해 OAuthAttributes 객체 생성
+        OAuthAttributes attributes = OAuthAttributes.of(socialType, userNameAttributeName, originAttributes);
 
         // User 객체 생성
         Users user = saveUser(attributes, socialType);
 
         log.info("user: {}", user);
 
-        return new OAuth2CustomUser(
+        return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())),
                 originAttributes,
                 attributes.getNameAttributeKey(),
@@ -80,17 +78,24 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return SocialType.GOOGLE;
     }
 
+    /**
+     * SocialType과 attributes에 들어있는 소셜 로그인의 식별값 id를 통해 회원을 찾아 반환하는 메소드
+     * 만약 찾은 회원이 있다면, 그대로 반환하고 없다면 saveUser()를 호출하여 회원을 저장한다.
+     */
+    @Transactional
+    private Users getUser(OAuthAttributes attributes, SocialType socialType) {
+        return userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOAuth2UserInfo().getId())
+                .orElseGet(() -> saveUser(attributes, socialType));
+    }
+
     /*
         SocialType과 attributes에 들어있는 소셜 로그인의 식별값 id를 통해 회원을 찾아 반환하는 메서드
         만약 찾은 회원이 있드면, 그대로 반환하고 없다면 save()를 호출하여 회원 저장
      */
+    @Transactional
     private Users saveUser(OAuthAttributes attributes, SocialType socialType) {
-        Users user = userRepository
-                .findBySocialTypeAndSocialId(socialType, attributes.getOAuth2UserInfo().getId())
-                .orElse(attributes.toEntity(socialType, attributes.getOAuth2UserInfo()));
-
-        return userRepository.save(user);
+        Users createdUser = attributes.toEntity(socialType, attributes.getOAuth2UserInfo());
+        return userRepository.save(createdUser);
     }
-
 
 }

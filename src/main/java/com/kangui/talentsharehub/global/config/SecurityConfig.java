@@ -77,8 +77,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> {
                     authorize
                             // 인증 절차 없이 접근할 URL 지정
-//                            .requestMatchers("/", "/favicon.ico").permitAll()
-                            .requestMatchers("/**").permitAll()
+                            .requestMatchers("/", "/favicon.ico").permitAll()
+                            .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                             // 나머지 리소스는 인증 절차를 거친 사용자만 접근이 가능하다는 의미
                             .anyRequest().authenticated();
                 })

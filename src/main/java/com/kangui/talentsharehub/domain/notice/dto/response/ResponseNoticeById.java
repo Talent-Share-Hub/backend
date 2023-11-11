@@ -12,18 +12,17 @@ import lombok.Getter;
 public class ResponseNoticeById {
 
     @Schema(description = "선생님 이름")
-    private String teacherName;
+    private final String teacherName;
 
     @Schema(description = "공지 제목")
-    private String title;
+    private final String title;
 
     @Schema(description = "공지 내용")
-    private String contents;
+    private final String contents;
 
     @Schema(description = "조회수")
-    private int views;
+    private final int views;
 
-    @Builder
     public ResponseNoticeById(Notice notice) {
         this.teacherName = notice.getUser().getUserProfile().getName();
         this.title = notice.getTitle();

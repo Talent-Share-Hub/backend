@@ -10,7 +10,7 @@ import java.util.Map;
 
 //
 @Getter
-public class OAuth2CustomUser extends DefaultOAuth2User {
+public class CustomOAuth2User extends DefaultOAuth2User {
     /*
         OAuth 로그인 시 처음 로그인일 경우, 내 서비스에서 Resource Server가 제공하지 않는
         정보가 필요할 경우에, Resource Server가 아닌 내 서비스에서 해당 정보를 사용자에게 입력 받아야 한다. (생년월일, 소개 등)
@@ -24,7 +24,7 @@ public class OAuth2CustomUser extends DefaultOAuth2User {
      */
     private Role role;
 
-    public OAuth2CustomUser(Collection<? extends GrantedAuthority> authorities,
+    public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities,
                             Map<String, Object> attributes, String nameAttributeKey,
                             String loginId, Role role) {
         super(authorities, attributes, nameAttributeKey);

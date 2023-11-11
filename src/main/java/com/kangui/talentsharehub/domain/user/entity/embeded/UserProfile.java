@@ -9,11 +9,13 @@ import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
 public class UserProfile {
     private String name; // 이름
 

@@ -39,7 +39,6 @@ public class ResponseUserById {
     @Schema(description = "소개", example = "안녕하세요~ 홍길동입니다.")
     private String introduction;
 
-    @Builder
     public ResponseUserById(Users user) {
         this.id = user.getId();
         this.name = user.getUserProfile().getName();

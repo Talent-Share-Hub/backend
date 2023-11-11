@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long>, CourseCustomRepository {
 
     @Query("SELECT c FROM Course c JOIN FETCH c.user JOIN FETCH c.category JOIN FETCH c.courseImageFile WHERE c.id = :courseId")
-    Course findCourseWithUserAndCategoryAndCourseImageFileById(@Param("courseId") Long courseId);
+    Optional<Course> findCourseWithUserAndCategoryAndCourseImageFileById(@Param("courseId") Long courseId);
 
     @Query("SELECT c FROM Course c JOIN FETCH c.courseImageFile WHERE c.id = :courseId")
     Optional<Course> findByIdWithCourseImageFile(@Param("courseId") Long courseId);

@@ -12,5 +12,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByCourseIdAndUserId(Long courseId, Long userId);
 
     @Query("SELECT s FROM Student s JOIN FETCH s.user WHERE s.course.id = :courseId")
-    List<Student> findByCourseIdJoinFetch(@Param("courseId") Long courseId);
+    List<Student> findByCourseIdWithUser(@Param("courseId") Long courseId);
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.course.id = :courseId")
+    Long countByCourseId(@Param("courseId") Long courseId);
 }

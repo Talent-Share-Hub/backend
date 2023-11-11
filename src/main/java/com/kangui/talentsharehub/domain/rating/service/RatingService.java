@@ -27,6 +27,11 @@ public class RatingService {
     private final CategoryRepository categoryRepository;
 
     public double getAverageRatingByUserIdAndCategoryId(Long userId, Long categoryId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 회원이 없습니다."));
+        categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new AppException(ErrorCode.COURSE_CATEGORY_NOT_FOUND, "일치하는 카테고리가 없습니다."));
+
         return ratingRepository.getAverageRatingByUserIdAndCategoryId(userId, categoryId);
     }
 

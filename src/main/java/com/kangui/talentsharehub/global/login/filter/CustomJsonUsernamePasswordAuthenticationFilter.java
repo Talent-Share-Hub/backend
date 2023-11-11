@@ -1,6 +1,7 @@
 package com.kangui.talentsharehub.global.login.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kangui.talentsharehub.global.login.dto.request.RequestLogin;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,11 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /**
  * 스프링 시큐리티의 폼 기반의 UsernamePasswordAuthenticationFilter를 참고하여 만든 커스텀 필터
@@ -68,18 +66,14 @@ public class CustomJsonUsernamePasswordAuthenticationFilter extends AbstractAuth
             throw new AuthenticationServiceException("Authentication Content-Type not supported: " + request.getContentType());
         }
 
-        // Spring Framework의 StreamUtils를 사용하여 HTTP 요청의 입력 스트림에서 메시지 바디를 문자열로 읽어오는 코드
-        String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
-
-        // JSON 요청을 String으로 변환한 messageBody를 objectMapper.readValue()를 통해 Map으로 변환하여 각각 loginId, password로 저장
-        Map<String, String> usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
-
-        String loginId = usernamePasswordMap.get(USERNAME_KEY);
-        String password = usernamePasswordMap.get(PASSWORD_KEY);
+        RequestLogin requestLogin = objectMapper.readValue(request.getInputStream(), RequestLogin.class);
 
         // 인증 처리 객체인 AuthenticationManager가 인증 시 사용할 인증 대상 객체
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginId, password);//principal 과 credentials 전달
+        UsernamePasswordAuthenticationToken authRequest =
+                new UsernamePasswordAuthenticationToken(requestLogin.getLoginId(), requestLogin.getPassword());//principal 과 credentials 전달
 
         return this.getAuthenticationManager().authenticate(authRequest);
     }
+
+
 }

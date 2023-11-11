@@ -51,7 +51,7 @@ public class JwtService {
      * AccessToken 생성 메소드
      */
     public String createAccessToken(String loginId) {
-        Date now =new Date();
+        Date now = new Date();
         return JWT.create() // JWT 토큰을 생성하는 빌더 반환
                 .withSubject(ACCESS_TOKEN_SUBJECT) // JWT의 Subject 지정 -> AccessToken이므로 AccessToken
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod)) // 토큰 만료 시간 설정
@@ -111,7 +111,7 @@ public class JwtService {
     /**
      * 헤더에서 RefreshToken 추출
      * 토큰 형식 : Bearer XXX에서 Bearer를 제외하고 순수 토큰만 가져오기 위해서
-     * 헤더를 가져온 후 "Bearer"를 삭제(""로 replace)
+     * 헤더를 가져온 후 "Bearer "를 삭제(""로 replace)
      */
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(refreshHeader))

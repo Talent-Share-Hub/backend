@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Schema(description = "강의 정보 응답")
-@Getter
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseCoursePage {
 

@@ -21,22 +21,22 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    @Operation(summary = "강의 수강생 등록", description = "강의 수강생 등록")
-    @PostMapping("/enroll")
-    public ResponseEntity<Long> enrollStudent(@Valid @RequestBody RequestEnrollStudent requestEnrollStudent) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.enrollStudent(requestEnrollStudent));
-    }
-
     @Operation(summary = "강의 수강생 조회", description = "course-id에 해당하는 강의 수강생 조회")
     @GetMapping("/course/{course-id}")
     public ResponseEntity<List<ResponseStudentByCourseId>> getStudentsByCourseId(@PathVariable("course-id") Long courseId) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.getStudentsByCourseId(courseId));
     }
 
-    // 강의 수강생 삭제 API
-    @DeleteMapping("/course/{courseId}/user/{userId}")
-    public ResponseEntity<Void> removeStudentFromCourse(@PathVariable Long courseId, @PathVariable Long userId) {
-        studentService.removeStudentFromCourse(courseId, userId);
+    @Operation(summary = "강의 수강생 등록", description = "강의 수강생 등록")
+    @PostMapping("/enroll")
+    public ResponseEntity<Long> enrollStudent(@Valid @RequestBody RequestEnrollStudent requestEnrollStudent) {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.enrollStudent(requestEnrollStudent));
+    }
+
+    @Operation(summary = "강의 수강생 삭제", description = "강의 수강생 삭제")
+    @DeleteMapping("/{student-id}")
+    public ResponseEntity<Void> removeStudentFromCourse(@PathVariable("student-id") Long studentId) {
+        studentService.removeStudentFromCourse(studentId);
         return ResponseEntity.noContent().build();
     }
 }
