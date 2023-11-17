@@ -1,5 +1,7 @@
 package com.kangui.talentsharehub.global.file;
 
+import com.kangui.talentsharehub.global.exception.AppException;
+import com.kangui.talentsharehub.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,8 +36,7 @@ public class FileStore {
         return storeFileResult;
     }
 
-    // MultipartFile 저장 및 url 반환
-    public UploadFile storeFile(MultipartFile multipartFile, String additionalPath) throws IOException {
+    public UploadFile storeFile(MultipartFile multipartFile, String additionalPath){
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -43,21 +44,33 @@ public class FileStore {
         String originalFileName = multipartFile.getOriginalFilename(); // 업로드된 파일의 원래 이름
         String storeFileName = createStoreFileName(originalFileName); // 저장될 파일의 고유한 이름
         String fileUrl = fileStorage + getFullPath(storeFileName, additionalPath); // 저장된 파일에 접근할 수 있는 URL
-        multipartFile.transferTo(new File(getFullPath(storeFileName, additionalPath))); // 파일을 실제 디렉토리에 저장
+        try {
+            multipartFile.transferTo(new File(getFullPath(storeFileName, additionalPath))); // 파일을 실제 디렉토리에 저장
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "이미지 저장에 실패 했습니다.");
+        }
 
         return new UploadFile(originalFileName, storeFileName, fileUrl);
     }
 
-    //
-    public boolean deleteFile(String storeFileName, String additionalPath) throws MalformedURLException {
+    public void deleteFile(String storeFileName, String additionalPath) {
 
         File fileToDelete = new File(getFullPath(storeFileName, additionalPath)); // URL에서 파일 경로를 추출하여 해당 파일 객체 생성
 
+        boolean delete = false;
+
         if(fileToDelete.exists()) {
-            return fileToDelete.delete(); // 파일이 존재하면 삭제하고 성공 여부 반환
+             delete = fileToDelete.delete();// 파일이 존재하면 삭제하고 성공 여부 반환
         }
 
-        return false; // 파일을 찾지 못하거나 삭제할 수 없음
+        if(!delete) {
+            throw new AppException(ErrorCode.FILE_DELETE_FAILED, "이미지 삭제에 실패 했습니다");
+        }
+    }
+
+    public UploadFile updateFile(MultipartFile newFile, String oldStoreFileName,String additionalPath) {
+        deleteFile(oldStoreFileName, additionalPath);
+        return storeFile(newFile, additionalPath);
     }
 
     // 원래 파일 이름에서 고유한 저장 파일 이름 생성

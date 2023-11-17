@@ -33,7 +33,12 @@ public enum ErrorCode {
     FILE_DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, ""),
 
     NOT_FIRST_OAUTH2_USER(HttpStatus.BAD_REQUEST, ""),
-    STUDENT_EXCEED(HttpStatus.BAD_REQUEST, "");
+    STUDENT_EXCEED(HttpStatus.BAD_REQUEST, ""),
+
+    NO_HAVE_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, ""),
+    FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, ""),
+
+    FORBIDDEN(HttpStatus.FORBIDDEN, "");
 
     private final HttpStatus httpStatus;
     private final String message;

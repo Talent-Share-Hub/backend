@@ -89,7 +89,6 @@ public class OAuthAttributes {
         return Users.builder()
                 .socialType(socialType)
                 .socialId(oAuth2UserInfo.getId())
-                .loginId("OAuth_" + UUID.randomUUID()) // JWT Token 발급하기 위한 용도 (UUID 임의 설정)
                 .userImageFile(UserImageFile.builder()
                         .fileUrl(oAuth2UserInfo.getImageUrl())
                         .build())

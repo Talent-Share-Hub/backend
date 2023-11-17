@@ -42,7 +42,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     public void addInfo(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
         String redirectUri = UriComponentsBuilder.fromUriString(guestRedirectUrl)
-                .queryParam("loginId", oAuth2User.getLoginId())
+                .queryParam("userId", oAuth2User.getUserId())
                 .build()
                 .toUriString();
 
@@ -50,7 +50,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
-        String accessToken = jwtService.createAccessToken(oAuth2User.getLoginId());
+        String accessToken = jwtService.createAccessToken(oAuth2User.getUserId());
         String refreshToken = jwtService.createRefreshToken();
 
         String redirectUri = UriComponentsBuilder.fromUriString(userRedirectUrl)

@@ -25,8 +25,6 @@ public class CustomJsonUsernamePasswordAuthenticationFilter extends AbstractAuth
     private static final String DEFAULT_LOGIN_REQUEST_URL = "/login"; // "/login"으로 오는 요청을 처리
     private static final String HTTP_METHOD = "POST"; // 로그인 HTTP 메소드는 POST
     private static final String CONTENT_TYPE = "application/json"; // JSON 타입의 데이터로 오는 로그인 요청만 처리
-    private static final String USERNAME_KEY = "loginId"; // 회원 로그인 시 로그인Id 요청 JSON Key : "loginId"
-    private static final String PASSWORD_KEY = "password"; // 회원 로그인 시 비밀번호 요청 JSon Key : "password"
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD); // "/login" + POST로 온 요청에 매칭된다.
 
@@ -70,7 +68,8 @@ public class CustomJsonUsernamePasswordAuthenticationFilter extends AbstractAuth
 
         // 인증 처리 객체인 AuthenticationManager가 인증 시 사용할 인증 대상 객체
         UsernamePasswordAuthenticationToken authRequest =
-                new UsernamePasswordAuthenticationToken(requestLogin.getLoginId(), requestLogin.getPassword());//principal 과 credentials 전달
+                new UsernamePasswordAuthenticationToken(
+                        requestLogin.getLoginId(), requestLogin.getPassword()); //principal 과 credentials 전달
 
         return this.getAuthenticationManager().authenticate(authRequest);
     }

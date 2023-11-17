@@ -20,7 +20,7 @@ public class LoginService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getLoginId())
+                .username(user.getId().toString())
                 .password(user.getPassword())
                 // 파라미터로 들어온 role들이 "ROLE_"으로 시작하지 않으면, 예외를 발생시킨다.
                 .roles(user.getRole().getKey())

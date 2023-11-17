@@ -55,7 +55,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes.of(socialType, userNameAttributeName, originAttributes);
 
         // User 객체 생성
-        Users user = saveUser(attributes, socialType);
+        Users user = getUser(attributes, socialType);
 
         log.info("user: {}", user);
 
@@ -63,7 +63,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())),
                 originAttributes,
                 attributes.getNameAttributeKey(),
-                user.getLoginId(),
+                user.getId(),
                 user.getRole()
         );
     }

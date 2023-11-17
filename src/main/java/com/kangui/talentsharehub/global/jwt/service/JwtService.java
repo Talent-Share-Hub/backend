@@ -42,7 +42,7 @@ public class JwtService {
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-    private static final String LOGIN_ID_CLAIM = "loginId";
+    private static final String USER_ID_CLAIM = "loginId";
     private static final String BEARER = "Bearer ";
 
     private final UserRepository userRepository;
@@ -50,7 +50,7 @@ public class JwtService {
     /**
      * AccessToken 생성 메소드
      */
-    public String createAccessToken(String loginId) {
+    public String createAccessToken(Long userId) {
         Date now = new Date();
         return JWT.create() // JWT 토큰을 생성하는 빌더 반환
                 .withSubject(ACCESS_TOKEN_SUBJECT) // JWT의 Subject 지정 -> AccessToken이므로 AccessToken
@@ -59,7 +59,7 @@ public class JwtService {
                 // 클레임으로는 loginId를 사용한다.
                 // 추가적으로 식별자나, 이름 등의 정보를 더 추가해도 된다.
                 // 추가할 경우 .withClaim(클레임 이름, 클레임 값)으로 설정해주면 된다.
-                .withClaim(LOGIN_ID_CLAIM, loginId)
+                .withClaim(USER_ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(accessSecretKey)); // HMAC512 알고리즘 사용, application-jwt.yml에서 지정한 accessSecret 키로 암호화
     }
 
@@ -126,13 +126,13 @@ public class JwtService {
      * 유효하다면 getClaim()으로 로그인 ID 추출
      * 유효하지 않다면 빈 Optional 객체 반환
      */
-    public Optional<String> extractLoginId(String accessToken) {
+    public Optional<String> extractUserId(String accessToken) {
         try {
             // 토큰 유효성 검사하는 데에 사용할 알고리즘이 있는 JWT verifier builder 반환
             return Optional.ofNullable(JWT.require(Algorithm.HMAC512(accessSecretKey))
                     .build() // 반환된 빌더로 JWT verifier 생성
                     .verify(accessToken) // accessToken을 검증하고 유효하지 않다면 예외 발생
-                    .getClaim(LOGIN_ID_CLAIM) // claim(loginID) 가져오기
+                    .getClaim(USER_ID_CLAIM) // claim(userID) 가져오기
                     .asString());
         } catch (Exception e) {
             log.error("액세스 토큰이 유효하지 않습니다.");

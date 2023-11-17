@@ -29,11 +29,12 @@ public class UploadFile {
     }
 
     public CourseImageFile toCourseImageFile() {
-        return CourseImageFile.builder()
-                .uploadFileName(uploadFileName)
-                .storeFileName(storeFileName)
-                .fileUrl(fileUrl)
-                .build();
+        return new CourseImageFile(
+                null,
+                uploadFileName,
+                storeFileName,
+                fileUrl
+        );
     }
 
     public HomeworkAttachmentFile toHomeworkAttachmentFile() {
