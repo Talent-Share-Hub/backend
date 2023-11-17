@@ -10,26 +10,18 @@ import lombok.Getter;
 
 @Schema(description = "강의 계획서 생성 요청")
 @Getter
-@AllArgsConstructor
 public class RequestCreateSyllabus {
 
     @NotNull
-    @Schema(description = "강의 ID", example = "1")
-    private Long courseId;
-
-    @NotNull
     @Schema(description = "주차", example = "1")
-    private int week;
+    private final int week;
 
     @NotBlank
     @Schema(description = "강의 내용", example = "courseContent")
-    private String courseContent;
+    private final String courseContent;
 
-    public Syllabus toEntity(Course course) {
-        return Syllabus.builder()
-                .course(course)
-                .week(week)
-                .courseContent(courseContent)
-                .build();
+    public RequestCreateSyllabus(int week, String courseContent) {
+        this.week = week;
+        this.courseContent = courseContent;
     }
 }

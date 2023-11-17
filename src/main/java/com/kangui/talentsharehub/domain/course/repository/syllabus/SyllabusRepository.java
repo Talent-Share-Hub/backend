@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SyllabusRepository extends JpaRepository<Syllabus, Long> {
-    Optional<Syllabus> findByWeek(int week);
-
     List<Syllabus> findByCourseId(Long courseId);
+
+    boolean existsByWeek(int week);
 }

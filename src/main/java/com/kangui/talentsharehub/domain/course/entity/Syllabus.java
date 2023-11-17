@@ -24,8 +24,7 @@ public class Syllabus {
 
     private String courseContent; // 강의 내용
 
-    @Builder
-    public Syllabus(Course course, int week, String courseContent) {
+    public Syllabus(final Course course, final int week, final String courseContent) {
         this.course = course;
         this.week = week;
         this.courseContent = courseContent;

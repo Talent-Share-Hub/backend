@@ -27,28 +27,25 @@ public class CourseImageFile {
 
     private String fileUrl; // 강의 이미지 접근 url
 
-    @Builder
-    public CourseImageFile(String uploadFileName, String storeFileName, String fileUrl) {
+    public CourseImageFile(
+            final Course course,
+            final String uploadFileName,
+            final String storeFileName,
+            final String fileUrl
+    ) {
+        this.course = course;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
         this.fileUrl = fileUrl;
     }
 
-    public void updateImageFile(String uploadFileName, String storeFileName, String fileUrl) {
-        if (StringUtils.hasText(uploadFileName)) {
-            this.uploadFileName= uploadFileName;
-        }
-
-        if (StringUtils.hasText(storeFileName)) {
-            this.storeFileName= storeFileName;
-        }
-
-        if (StringUtils.hasText(fileUrl)) {
-            this.fileUrl= fileUrl;
-        }
+    public void updateImageFile(final String uploadFileName, final String storeFileName, final String fileUrl) {
+        this.uploadFileName= uploadFileName;
+        this.storeFileName= storeFileName;
+        this.fileUrl= fileUrl;
     }
 
-    public void changeCourse(Course course) {
+    public void changeCourse(final Course course) {
         this.course = course;
     }
 }

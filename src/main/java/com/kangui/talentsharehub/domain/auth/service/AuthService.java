@@ -60,9 +60,9 @@ public class AuthService {
         return userRepository.save(user).getId();
     }
 
-    public Long addInfo(String loginId, RequestAddInfo requestAddInfo) {
-        Users user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 아이디 입니다."));
+    public Long addInfo(Long userId, RequestAddInfo requestAddInfo) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 사용자 입니다."));
 
         if(!user.getRole().equals(Role.GUEST)) {
             throw new AppException(ErrorCode.NOT_FIRST_OAUTH2_USER, "OAuth2로 처음 가입하는 회원이 아닙니다.");

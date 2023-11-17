@@ -2,11 +2,12 @@ package com.kangui.talentsharehub.domain.course.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CourseSearchCondition {
 
-    String search;
-    String category;
+    final String search;
+    final String category;
 }

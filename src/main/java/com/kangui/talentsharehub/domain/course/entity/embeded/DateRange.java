@@ -4,20 +4,20 @@ import jakarta.persistence.Embeddable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @Getter
 @Embeddable
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class DateRange {
 
-    private LocalDate startDate;
+    private final LocalDate startDate;
 
-    private LocalDate endDate;
+    private final LocalDate endDate;
 
-    @Builder
-    public DateRange(LocalDate startDate, LocalDate endDate) {
+    public DateRange(final LocalDate startDate, final LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

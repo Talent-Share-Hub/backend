@@ -6,39 +6,39 @@ import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @Schema(description = "강의 정보 응답")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseCoursePage {
 
     @Schema(description = "강의 번호")
-    private Long id;
+    private final Long id;
 
     @Schema(description = "선생님 이름")
-    private String teacherName;
+    private final String teacherName;
 
     @Schema(description = "강의 이미지 url")
-    private String imageUrl;
+    private final String imageUrl;
 
     @Schema(description = "강의 제목")
-    private String title;
+    private final String title;
 
     @Schema(description = "수용 인원")
-    private int capacity;
+    private final int capacity;
 
     @Schema(description = "등록 인원")
-    private int enrolledStudents;
+    private final int enrolledStudents;
 
     @Schema(description = "강의 상태")
-    private CourseStatus courseStatus;
+    private final CourseStatus courseStatus;
 
     @Schema(description = "강의 시작일")
-    private LocalDate startDate;
+    private final LocalDate startDate;
 
     @Schema(description = "강의 종료일")
-    private LocalDate endDate;
+    private final LocalDate endDate;
 
     @QueryProjection
     public ResponseCoursePage(Long id, String teacherName, String imageUrl, String title, int capacity, int enrolledStudents, CourseStatus courseStatus, LocalDate startDate, LocalDate endDate) {

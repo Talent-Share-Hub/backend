@@ -26,8 +26,7 @@ public class Student {
     @JoinColumn(name = "course_id")
     private Course course; // 강의 ID
 
-    @Builder
-    public Student(Users user, Course course) {
+    public Student(final Users user, final Course course) {
         this.user = user;
         this.course = course;
     }

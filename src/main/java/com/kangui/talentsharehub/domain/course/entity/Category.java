@@ -19,9 +19,7 @@ public class Category {
 
     private String name; // 카테고리 명
 
-    @Builder
-    public Category(Long id, String name) {
-        this.id = id;
+    public Category(final String name) {
         this.name = name;
     }
 }

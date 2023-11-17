@@ -54,9 +54,18 @@ public class Course extends TimeStampedEntity {
     @Embedded
     private DateRange dateRange; // 시작일, 종료일
 
-    @Builder
-    public Course(Long id, Users user, Category category, CourseImageFile courseImageFile, String title, String description, String reference, String link, String contact, int capacity, int enrolledStudents, CourseStatus courseStatus, DateRange dateRange) {
-        this.id = id;
+    public Course(
+            final Users user,
+            final Category category,
+            final CourseImageFile courseImageFile,
+            final String title,
+            final String description,
+            final String reference,
+            final String link,
+            final String contact,
+            final int capacity,
+            final DateRange dateRange
+    ) {
         this.user = user;
         this.category = category;
         this.courseImageFile = courseImageFile;
@@ -66,28 +75,25 @@ public class Course extends TimeStampedEntity {
         this.link = link;
         this.contact = contact;
         this.capacity = capacity;
-        this.enrolledStudents = enrolledStudents;
-        this.courseStatus = courseStatus;
+        this.enrolledStudents = 1;
+        this.courseStatus = CourseStatus.RECRUITING;
         this.dateRange = dateRange;
     }
 
-    public void updateCourse(UpdateCourseForm requestUpdateCourse) {
-        this.title = StringUtils.hasText(requestUpdateCourse.getTitle()) ? requestUpdateCourse.getTitle() : this.title;
-        this.description = StringUtils.hasText(requestUpdateCourse.getDescription()) ? requestUpdateCourse.getDescription() : this.description;
-        this.reference = StringUtils.hasText(requestUpdateCourse.getReference()) ? requestUpdateCourse.getReference() : this.reference;
-        this.link = StringUtils.hasText(requestUpdateCourse.getLink()) ? requestUpdateCourse.getLink() : this.link;
-        this.contact = StringUtils.hasText(requestUpdateCourse.getContact()) ? requestUpdateCourse.getContact() : this.contact;
-        this.capacity = requestUpdateCourse.getCapacity() > 0 ? requestUpdateCourse.getCapacity() : this.capacity;
-
-        if (requestUpdateCourse.getStartDate() != null && requestUpdateCourse.getEndDate() != null && !requestUpdateCourse.getStartDate().isAfter(requestUpdateCourse.getEndDate())) {
-            this.dateRange = DateRange.builder()
-                    .startDate(requestUpdateCourse.getStartDate())
-                    .endDate(requestUpdateCourse.getEndDate())
-                    .build();
-        }
+    public void updateCourse(final UpdateCourseForm requestUpdateCourse) {
+        this.title = requestUpdateCourse.getTitle();
+        this.description = requestUpdateCourse.getDescription();
+        this.reference = requestUpdateCourse.getReference();
+        this.link = requestUpdateCourse.getLink();
+        this.contact = requestUpdateCourse.getContact();
+        this.capacity = requestUpdateCourse.getCapacity();
+        this.dateRange = new DateRange(
+                requestUpdateCourse.getStartDate(),
+                requestUpdateCourse.getEndDate()
+        );
     }
 
-    public void changeCourseImageFile(CourseImageFile courseImageFile) {
+    public void changeCourseImageFile(final CourseImageFile courseImageFile) {
         this.courseImageFile = courseImageFile;
         courseImageFile.changeCourse(this);
     }
