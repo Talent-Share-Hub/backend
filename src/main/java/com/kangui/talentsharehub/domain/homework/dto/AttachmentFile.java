@@ -3,8 +3,10 @@ package com.kangui.talentsharehub.domain.homework.dto;
 import com.kangui.talentsharehub.domain.homework.entity.HomeworkAttachmentFile;
 import com.kangui.talentsharehub.domain.homework.entity.SubmissionAttachmentFile;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class AttachmentFile {
 
     private final Long id;
@@ -13,15 +15,19 @@ public class AttachmentFile {
 
     private final String fileUrl;
 
-    public AttachmentFile(HomeworkAttachmentFile homeworkAttachmentFile) {
-        this.id = homeworkAttachmentFile.getId();
-        this.uploadFileName = homeworkAttachmentFile.getUploadFileName();
-        this.fileUrl = homeworkAttachmentFile.getFileUrl();
+    public static AttachmentFile of(HomeworkAttachmentFile homeworkAttachmentFile) {
+        return new AttachmentFile(
+                homeworkAttachmentFile.getId(),
+                homeworkAttachmentFile.getUploadFileName(),
+                homeworkAttachmentFile.getFileUrl()
+        );
     }
 
-    public AttachmentFile(SubmissionAttachmentFile submissionAttachmentFile) {
-        this.id = submissionAttachmentFile.getId();
-        this.uploadFileName = submissionAttachmentFile.getUploadFileName();
-        this.fileUrl = submissionAttachmentFile.getFileUrl();
+    public static AttachmentFile of(SubmissionAttachmentFile submissionAttachmentFile) {
+        return new AttachmentFile(
+                submissionAttachmentFile.getId(),
+                submissionAttachmentFile.getUploadFileName(),
+                submissionAttachmentFile.getFileUrl()
+        );
     }
 }

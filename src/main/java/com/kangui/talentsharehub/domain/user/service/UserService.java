@@ -10,6 +10,7 @@ import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
 import com.kangui.talentsharehub.global.file.FileStore;
 import com.kangui.talentsharehub.global.file.UploadFile;
+import com.kangui.talentsharehub.global.login.resolver.dto.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
@@ -32,45 +33,37 @@ public class UserService {
     private final UserRepository userRepository;
     private final FileStore fileStore;
 
-    public ResponseUserById getUserById(Long userId) {
-        Users user = userRepository.findByIdWithUserImageFile(userId)
+    @Transactional(readOnly = true)
+    public ResponseUserById getUserById(final Long userId) {
+        final Users user = userRepository.findByIdWithUserImageFile(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 회원이 없습니다."));
 
-        return new ResponseUserById(user);
+        return ResponseUserById.of(user);
     }
 
-    @Transactional
-    public Long updateUserById(Long userId, UpdateUserByIdForm updateUserByIdForm) {
-        Users user = userRepository.findByIdWithUserImageFile(userId)
+    public Long updateUserById(final Principal principal, final UpdateUserByIdForm updateUserByIdForm) {
+        Users user = userRepository.findByIdWithUserImageFile(principal.userId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 회원이 없습니다."));
 
-        UploadFile uploadFile = null;
-
-        try {
-            fileStore.deleteFile(user.getUserImageFile().getStoreFileName(), userPath);
-            uploadFile = fileStore.storeFile(updateUserByIdForm.getProfileImage(), userPath);
-        } catch (IOException e) {
-            log.error("Failed to update profile image for user with ID: {}", userId, e);
-            throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "사용자 프로필 이미지 업로드에 실패 했습니다.");
-        }
+        final UploadFile uploadFile = fileStore.updateFile(
+                updateUserByIdForm.getProfileImage(),
+                user.getUserImageFile().getStoreFileName(),
+                userPath);
 
         user.updateUser(updateUserByIdForm);
-        user.getUserImageFile().updateImageFile(uploadFile.getUploadFileName(), uploadFile.getStoreFileName(), uploadFile.getFileUrl());
+        user.getUserImageFile().updateImageFile(
+                uploadFile.getUploadFileName(),
+                uploadFile.getStoreFileName(),
+                uploadFile.getFileUrl());
 
-        return userId;
+        return user.getId();
     }
 
-    @Transactional
-    public void deleteUserById(Long userId) {
-        Users user = userRepository.findByIdWithUserImageFile(userId)
+    public void deleteUserById(final Principal principal) {
+        Users user = userRepository.findByIdWithUserImageFile(principal.userId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 회원이 없습니다."));
 
-        try {
-            fileStore.deleteFile(user.getUserImageFile().getStoreFileName(), userPath);
-        } catch (MalformedURLException e) {
-            log.error("사용자 이미지 삭제에 실패 했습니다. userId: {}", userId, e);
-            throw new AppException(ErrorCode.FILE_DELETE_FAILED, "사용자 프로필 이미지 삭제에 실패 했습니다.");
-        }
+        fileStore.deleteFile(user.getUserImageFile().getStoreFileName(), userPath);
 
         userRepository.delete(user);
     }

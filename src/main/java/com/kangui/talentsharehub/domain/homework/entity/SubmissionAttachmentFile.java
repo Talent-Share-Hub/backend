@@ -26,7 +26,6 @@ public class SubmissionAttachmentFile {
 
     private String fileUrl; // 과제 파일 접근 URL
 
-    @Builder
     public SubmissionAttachmentFile(Submission submission, String uploadFileName, String storeFileName, String fileUrl) {
         this.submission = submission;
         this.uploadFileName = uploadFileName;

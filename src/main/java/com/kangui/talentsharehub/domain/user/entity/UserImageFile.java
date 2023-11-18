@@ -27,29 +27,25 @@ public class UserImageFile {
 
     private String fileUrl; // 프로필 이미지 접근 URL
 
-    @Builder
-    public UserImageFile(Users user, String uploadFileName, String storeFileName, String fileUrl) {
+    public UserImageFile(
+            final Users user,
+            final String uploadFileName,
+            final String storeFileName,
+            final String fileUrl
+    ) {
         this.user = user;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
         this.fileUrl = fileUrl;
     }
 
-    public void updateImageFile(String uploadFileName, String storeFileName, String fileUrl) {
-        if (StringUtils.hasText(uploadFileName)) {
-            this.uploadFileName= uploadFileName;
-        }
-
-        if (StringUtils.hasText(storeFileName)) {
-            this.storeFileName= storeFileName;
-        }
-
-        if (StringUtils.hasText(fileUrl)) {
-            this.fileUrl= fileUrl;
-        }
+    public void updateImageFile(final String uploadFileName, final String storeFileName, final String fileUrl) {
+        this.uploadFileName= uploadFileName;
+        this.storeFileName= storeFileName;
+        this.fileUrl= fileUrl;
     }
 
-    public void changeUser(Users user) {
+    public void changeUser(final Users user) {
         this.user = user;
     }
 }

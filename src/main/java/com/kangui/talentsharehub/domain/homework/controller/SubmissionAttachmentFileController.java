@@ -1,6 +1,6 @@
 package com.kangui.talentsharehub.domain.homework.controller;
 
-import com.kangui.talentsharehub.domain.homework.service.HomeworkAttachmentFileService;
+import com.kangui.talentsharehub.domain.homework.service.SubmissionAttachmentFileService;
 import com.kangui.talentsharehub.global.login.resolver.annotation.AuthPrincipal;
 import com.kangui.talentsharehub.global.login.resolver.dto.Principal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,45 +15,46 @@ import org.springframework.web.multipart.MultipartFile;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-@Tag(name = "과제 첨부 파일 관련 API")
+@Tag(name = "과제 제출 첨부 파일 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/course/{course-id}/homework-attachment-file")
-public class HomeworkAttachmentFileController {
+@RequestMapping("/api/submission-attachment-file")
+public class SubmissionAttachmentFileController {
 
-    private final HomeworkAttachmentFileService homeworkAttachmentFileService;
+    private final SubmissionAttachmentFileService submissionAttachmentFileService;
 
-    @Operation(summary = "과제 첨부 파일 다운로드", description = "file-id에 해당하는 과제 첨부 파일 다운로드")
+    @Operation(summary = "과제 제출 첨부 파일 다운로드", description = "file-id에 해당하는 첨부 파일 다운로드")
     @GetMapping("/{file-id}")
     public ResponseEntity<Resource> downloadAttachById(
             final HttpServletResponse response,
             @AuthPrincipal final Principal principal,
-            @PathVariable("{file-id}") final Long fileId
+            @PathVariable("file-id") final Long fileId
     ) {
         return ResponseEntity.status(OK)
-                .body(homeworkAttachmentFileService.downloadAttachById(response, principal, fileId));
+                .body(submissionAttachmentFileService.downloadAttachById(response, principal, fileId));
     }
 
-    @Operation(summary = "과제 첨부 파일 추가", description = "homework-id에 해당 하는 파일 추가")
-    @PostMapping("/homework/{homework-id}")
-    public ResponseEntity<Long> addAttachmentFileByHomeworkId(
+    @Operation(summary = "과제 제출 첨부 파일 추가", description = "submission-id에 해당 하는 파일 추가")
+    @PostMapping("/submission/{submission-id}")
+    public ResponseEntity<Long> addAttachmentFileBySubmissionId(
             @AuthPrincipal final Principal principal,
-            @PathVariable("homework-id") final Long homeworkId,
-            @RequestParam("attachmentFile") final MultipartFile attachmentFile
-    ) {
+            @RequestParam("attachmentFile") final MultipartFile attachmentFile,
+            @PathVariable("submission-id") final Long submissionId
+    ){
         return ResponseEntity
                 .status(CREATED)
-                .body(homeworkAttachmentFileService
-                        .addAttachmentFileByHomeworkId(principal, homeworkId, attachmentFile));
+                .body(submissionAttachmentFileService
+                        .addAttachmentFileBySubmissionId(principal, attachmentFile, submissionId));
+
     }
 
-    @Operation(summary = "과제 첨부 파일 삭제", description = "file-id에 해당하는 과제 첨부 파일 삭제")
+    @Operation(summary = "과제 제출 첨부 파일 삭제", description = "file-id에 해당하는 과제 첨부 파일 삭제")
     @DeleteMapping("/{file-id}")
     public ResponseEntity<Void> deleteAttachmentFileById(
             @AuthPrincipal final Principal principal,
             @PathVariable("file-id") final Long fileId
     ) {
-        homeworkAttachmentFileService.deleteAttachmentFileById(principal, fileId);
+        submissionAttachmentFileService.deleteAttachmentFileById(principal, fileId);
         return ResponseEntity.noContent().build();
     }
 }

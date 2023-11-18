@@ -48,8 +48,18 @@ public class Users extends TimeStampedEntity {
 
     private String refreshToken; // 리프레시 토큰
 
-    @Builder
-    public Users(UserImageFile userImageFile, String loginId, String password, UserProfile userProfile, String nickname, String introduction, Role role, SocialType socialType, String socialId, String refreshToken) {
+    public Users(
+            final UserImageFile userImageFile,
+            final String loginId,
+            final String password,
+            final UserProfile userProfile,
+            final String nickname,
+            final String introduction,
+            final Role role,
+            final SocialType socialType,
+            final String socialId,
+            final String refreshToken
+    ) {
         this.userImageFile = userImageFile;
         this.loginId = loginId;
         this.password = password;
@@ -62,44 +72,31 @@ public class Users extends TimeStampedEntity {
         this.refreshToken = refreshToken;
     }
 
-    // 유저 권한 설정 메서드
-    public void authorizeUser() {
-        this.role = Role.USER;
-    }
-
-    public void changeUserImageFile(UserImageFile userImageFile) {
+    public void changeUserImageFile(final UserImageFile userImageFile) {
         this.userImageFile = userImageFile;
         userImageFile.changeUser(this);
     }
 
-    public void encodePassword(PasswordEncoder passwordEncoder) {
+    public void encodePassword(final PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
 
-    public void updateRefreshToken(String updateRefreshToken) {
+    public void updateRefreshToken(final String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
     }
 
-    public void updateUser(UpdateUserByIdForm requestUpdateUserById) {
-        if (StringUtils.hasText(requestUpdateUserById.getNickname())) {
-            this.nickname = requestUpdateUserById.getNickname();
-        }
-
-        if (StringUtils.hasText(requestUpdateUserById.getIntroduction())) {
-            this.introduction = requestUpdateUserById.getIntroduction();
-        }
+    public void updateUser(final UpdateUserByIdForm requestUpdateUserById) {
+        this.nickname = requestUpdateUserById.getNickname();
+        this.introduction = requestUpdateUserById.getIntroduction();
     }
 
-    public void changeNickname() {
-        this.nickname = nickname + UUID.randomUUID();
-    }
-
-    public void addInfo(RequestAddInfo requestAddInfo) {
-        this.userProfile = UserProfile.builder()
-                .name(requestAddInfo.getName())
-                .birthDay(requestAddInfo.getBirthDay())
-                .phoneNumber(requestAddInfo.getPhoneNumber())
-                .gender(requestAddInfo.getGender()).build();
+    public void addInfo(final RequestAddInfo requestAddInfo) {
+        this.userProfile = new UserProfile(
+                requestAddInfo.getName(),
+                requestAddInfo.getBirthDay(),
+                requestAddInfo.getPhoneNumber(),
+                requestAddInfo.getGender()
+        );
         this.nickname = requestAddInfo.getNickname();
         this.introduction = requestAddInfo.getIntroduction();
     }

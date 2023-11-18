@@ -4,6 +4,8 @@ import com.kangui.talentsharehub.domain.notice.dto.request.RequestNotice;
 import com.kangui.talentsharehub.domain.notice.dto.response.ResponseNoticeById;
 import com.kangui.talentsharehub.domain.notice.dto.response.ResponseNoticePage;
 import com.kangui.talentsharehub.domain.notice.service.NoticeService;
+import com.kangui.talentsharehub.global.login.resolver.annotation.AuthPrincipal;
+import com.kangui.talentsharehub.global.login.resolver.dto.Principal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -12,14 +14,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "공지 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/notice")
+@RequestMapping("/api/course/{course-id}/notice")
 public class NoticeController {
 
     private final NoticeService noticeService;
@@ -33,21 +37,31 @@ public class NoticeController {
     })
     @GetMapping
     public ResponseEntity<Page<ResponseNoticePage>> getNoticePage(
-            @RequestParam("search") String search,
-            @RequestParam("course-id") Long courseId,
-            Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.getNoticePage(search, courseId, pageable));
+            @AuthPrincipal Principal principal,
+            @RequestParam("search") final String search,
+            @PathVariable("course-id") final Long courseId,
+            final Pageable pageable
+    ) {
+        return ResponseEntity.status(OK).body(noticeService.getNoticePage(principal, search, courseId, pageable));
     }
 
     @Operation(summary = "공지 조회(notice_id)", description = "notice_id에 해당 하는 공지 조회")
     @GetMapping("/{notice-id}")
-    public ResponseEntity<ResponseNoticeById> getNoticeById(@PathVariable("notice-id") Long noticeId) {
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.getNoticeById(noticeId));
+    public ResponseEntity<ResponseNoticeById> getNoticeById(
+            @AuthPrincipal final Principal principal,
+            @PathVariable("notice-id") final Long noticeId,
+            @PathVariable("course-id") final Long courseId
+    ) {
+        return ResponseEntity.status(OK).body(noticeService.getNoticeById(principal, noticeId, courseId));
     }
 
     @Operation(summary = "공지 생성", description = "공지 생성")
     @PostMapping
-    public ResponseEntity<Long> createNotice(@Valid @RequestBody RequestNotice requestNotice) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(noticeService.createNotice(requestNotice));
+    public ResponseEntity<Long> createNotice(
+            @AuthPrincipal Principal principal,
+            @Valid @RequestBody final RequestNotice requestNotice,
+            @PathVariable("course-id") final Long courseId
+    ) {
+        return ResponseEntity.status(CREATED).body(noticeService.createNotice(principal, requestNotice, courseId));
     }
 }

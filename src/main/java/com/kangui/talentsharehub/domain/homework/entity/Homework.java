@@ -39,8 +39,14 @@ public class Homework extends TimeStampedEntity {
 
     private LocalDateTime endDate; // 마감 일자
 
-    @Builder
-    public Homework(Course course, String title, String contents, List<HomeworkAttachmentFile> homeworkAttachmentFile, LocalDateTime startDate, LocalDateTime endDate) {
+    public Homework(
+            final Course course,
+            final String title,
+            final String contents,
+            final List<HomeworkAttachmentFile> homeworkAttachmentFile,
+            final LocalDateTime startDate,
+            final LocalDateTime endDate
+    ) {
         this.course = course;
         this.title = title;
         this.contents = contents;
@@ -49,15 +55,15 @@ public class Homework extends TimeStampedEntity {
         this.endDate = endDate;
     }
 
-    public void addHomeworkAttachmentFile(HomeworkAttachmentFile attachmentFile) {
+    public void addHomeworkAttachmentFile(final HomeworkAttachmentFile attachmentFile) {
         this.homeworkAttachmentFile.add(attachmentFile);
         attachmentFile.changeHomework(this);
     }
 
-    public void updateHomework(String title, String contents, LocalDateTime startDate, LocalDateTime endDate) {
-        this.title = title;
-        this.contents = contents;
-        this.startDate = startDate;
-        this.endDate = endDate;
+    public void updateHomework(RequestUpdateHomework requestUpdateHomework) {
+        this.title = requestUpdateHomework.getTitle();
+        this.contents = requestUpdateHomework.getContents();
+        this.startDate = requestUpdateHomework.getStartDate();
+        this.endDate = requestUpdateHomework.getEndDate();
     }
 }

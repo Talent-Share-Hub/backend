@@ -12,28 +12,15 @@ import lombok.Getter;
 
 @Schema(description = "별점 추가 요청")
 @Getter
-@AllArgsConstructor
 public class RequestRating {
-
-    @NotNull
-    @Schema(description = "사용자 ID", example = "1")
-    private Long userId;
-
-    @NotNull
-    @Schema(description = "강의 카테고리 ID", example = "1")
-    private Long courseCategoryId;
 
     @NotNull
     @Min(value = 1, message = "별점은 1 이상이어야 합니다.")
     @Max(value = 5, message = "별점은 5 이하이어야 합니다.")
     @Schema(description = "별점", example = "1")
-    private int rating;
+    private final int rating;
 
-    public Rating toEntity(Users user, Category category) {
-        return Rating.builder()
-                .user(user)
-                .category(category)
-                .rating(rating)
-                .build();
+    public RequestRating(final int rating) {
+        this.rating = rating;
     }
 }

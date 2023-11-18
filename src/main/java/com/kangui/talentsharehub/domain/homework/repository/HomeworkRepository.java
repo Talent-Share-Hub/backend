@@ -18,4 +18,13 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 
     @Query("SELECT h FROM Homework h JOIN FETCH h.homeworkAttachmentFile")
     Optional<Homework> findByIdWithAttachmentFile(Long homeworkId);
+
+    @Query(
+            "SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END" +
+            "FROM Homework h " +
+            "JOIN h.course c " +
+            "JOIN c.user u" +
+            "WHERE h.id = :homeworkId AND u.id = :userId"
+    )
+    boolean validateTeacherByIdAndUserId(@Param("homeworkId") Long homeworkId, @Param("userId") Long userId);
 }

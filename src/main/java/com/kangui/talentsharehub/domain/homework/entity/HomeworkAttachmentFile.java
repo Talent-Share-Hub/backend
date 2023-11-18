@@ -26,15 +26,18 @@ public class HomeworkAttachmentFile {
 
     private String fileUrl; // 과제 파일 접근 URL
 
-    @Builder
-    public HomeworkAttachmentFile(Homework homework, String uploadFileName, String storeFileName, String fileUrl) {
+    public HomeworkAttachmentFile(
+            final Homework homework,
+            final String uploadFileName,
+            final String storeFileName,
+            final String fileUrl) {
         this.homework = homework;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
         this.fileUrl = fileUrl;
     }
 
-    public void changeHomework(Homework homework) {
+    public void changeHomework(final Homework homework) {
         this.homework = homework;
     }
 }

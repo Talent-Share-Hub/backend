@@ -34,14 +34,16 @@ public class Notice extends TimeStampedEntity {
 
     private int views; // 조회수
 
-    @Builder
-    public Notice(Long id, Users user, Course course, String title, String contents, int views) {
-        this.id = id;
+    public Notice(
+            final Users user,
+            final Course course,
+            final String title,
+            final String contents) {
         this.user = user;
         this.course = course;
         this.title = title;
         this.contents = contents;
-        this.views = views;
+        this.views = 0;
     }
 
     public void increaseView() {

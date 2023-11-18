@@ -5,10 +5,11 @@ import com.kangui.talentsharehub.domain.notice.entity.Notice;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Schema(description = "공지 조회 응답")
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@RequiredArgsConstructor
 public class ResponseNoticeById {
 
     @Schema(description = "선생님 이름")
@@ -23,10 +24,12 @@ public class ResponseNoticeById {
     @Schema(description = "조회수")
     private final int views;
 
-    public ResponseNoticeById(Notice notice) {
-        this.teacherName = notice.getUser().getUserProfile().getName();
-        this.title = notice.getTitle();
-        this.contents = notice.getContents();
-        this.views = notice.getViews();
+    public static ResponseNoticeById of(final Notice notice) {
+        return new ResponseNoticeById(
+                notice.getUser().getUserProfile().getName(),
+                notice.getTitle(),
+                notice.getContents(),
+                notice.getViews()
+        );
     }
 }

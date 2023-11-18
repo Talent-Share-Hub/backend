@@ -25,7 +25,11 @@ public class UpdateUserByIdForm {
     @Schema(description = "소개")
     private final String introduction;
 
-    public UpdateUserByIdForm(MultipartFile profileImage, String nickname, String introduction) {
+    public UpdateUserByIdForm(
+            final MultipartFile profileImage,
+            final String nickname,
+            final String introduction
+    ) {
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.introduction = introduction;

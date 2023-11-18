@@ -36,24 +36,24 @@ public class Submission extends TimeStampedEntity {
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubmissionAttachmentFile> submissionAttachmentFile = new ArrayList<>();
 
-    private LocalDateTime submissionDate; // 제출 일자
-
-    @Builder
-    public Submission(Long id, Student student, Homework homework, String contents, List<SubmissionAttachmentFile> submissionAttachmentFile, LocalDateTime submissionDate) {
-        this.id = id;
+    public Submission(
+            final Student student,
+            final Homework homework,
+            final String contents,
+            final List<SubmissionAttachmentFile> submissionAttachmentFile
+    ) {
         this.student = student;
         this.homework = homework;
         this.contents = contents;
         this.submissionAttachmentFile = submissionAttachmentFile;
-        this.submissionDate = submissionDate;
     }
 
-    public void addSubmissionAttachmentFile(SubmissionAttachmentFile submissionAttachmentFile) {
+    public void addSubmissionAttachmentFile(final SubmissionAttachmentFile submissionAttachmentFile) {
         this.submissionAttachmentFile.add(submissionAttachmentFile);
         submissionAttachmentFile.changeSubmission(this);
     }
 
-    public void updateSubmission(String contents) {
+    public void updateSubmission(final String contents) {
         this.contents = contents;
     }
 }

@@ -20,7 +20,10 @@ public class RequestCreateSyllabus {
     @Schema(description = "강의 내용", example = "courseContent")
     private final String courseContent;
 
-    public RequestCreateSyllabus(int week, String courseContent) {
+    public RequestCreateSyllabus(
+            final int week,
+            final String courseContent
+    ) {
         this.week = week;
         this.courseContent = courseContent;
     }

@@ -25,7 +25,7 @@ public class FileStore {
         return fileDir + additionalPath + fileName;
     }
 
-    public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles, String additionalPath) throws IOException {
+    public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles, String additionalPath) {
         List<UploadFile> storeFileResult = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {

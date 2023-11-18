@@ -4,6 +4,7 @@ import com.kangui.talentsharehub.domain.auth.dto.request.RequestAddInfo;
 import com.kangui.talentsharehub.domain.auth.dto.request.SignUpForm;
 import com.kangui.talentsharehub.domain.user.entity.UserImageFile;
 import com.kangui.talentsharehub.domain.user.entity.Users;
+import com.kangui.talentsharehub.domain.user.entity.embeded.UserProfile;
 import com.kangui.talentsharehub.domain.user.enums.Role;
 import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
@@ -32,27 +33,35 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final FileStore fileStore;
 
-    public Long signUp(SignUpForm signUpForm) {
-        userRepository.findByLoginId(signUpForm.getLoginId())
-                .ifPresent((user) -> {
-                    throw new AppException(ErrorCode.USER_DUPLICATED, "이미 존재하는 아이디 입니다.");
-                });
-
-        userRepository.findByNickname(signUpForm.getNickname())
-                .ifPresent((user) -> {
-                    throw new AppException(ErrorCode.USER_DUPLICATED, "이미 존재하는 닉네임 입니다.");
-                });
-
-        UploadFile uploadFile = null;
-
-        try {
-            uploadFile = fileStore.storeFile(signUpForm.getProfileImage(), userPath);
-        } catch (IOException e) {
-            log.error("Failed to store profile image", e);
-            throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "사용자 프로필 이미지 업로드에 실패 했습니다.");
+    public Long signUp(final SignUpForm signUpForm) {
+        if (userRepository.existsByLoginId(signUpForm.getLoginId())) {
+            throw new AppException(ErrorCode.USER_DUPLICATED, "이미 존재하는 아이디 입니다.");
         }
 
-        Users user = signUpForm.toEntity();
+        if (userRepository.existsByNickname(signUpForm.getNickname())) {
+            throw new AppException(ErrorCode.USER_DUPLICATED, "이미 존재하는 닉네임 입니다.");
+        }
+
+        final UploadFile uploadFile = fileStore.storeFile(signUpForm.getProfileImage(), userPath);
+
+        Users user = new Users(
+                null,
+                signUpForm.getLoginId(),
+                signUpForm.getPassword(),
+                new UserProfile(
+                        signUpForm.getName(),
+                        signUpForm.getBirthDay(),
+                        signUpForm.getPhoneNumber(),
+                        signUpForm.getGender()
+                ),
+                signUpForm.getNickname(),
+                signUpForm.getIntroduction(),
+                Role.USER,
+                null,
+                null,
+                null
+        );
+
         UserImageFile userImageFile = uploadFile.toUserImageFile();
         user.changeUserImageFile(userImageFile);
         user.encodePassword(passwordEncoder);
@@ -60,7 +69,7 @@ public class AuthService {
         return userRepository.save(user).getId();
     }
 
-    public Long addInfo(Long userId, RequestAddInfo requestAddInfo) {
+    public Long addInfo(final Long userId, final RequestAddInfo requestAddInfo) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 사용자 입니다."));
 
@@ -68,10 +77,9 @@ public class AuthService {
             throw new AppException(ErrorCode.NOT_FIRST_OAUTH2_USER, "OAuth2로 처음 가입하는 회원이 아닙니다.");
         }
 
-        userRepository.findByNickname(requestAddInfo.getNickname())
-                .ifPresent((u) -> {
-                    throw new AppException(ErrorCode.USER_DUPLICATED, "이미 존재하는 닉네임 입니다.");
-                });
+        if(userRepository.existsByNickname(requestAddInfo.getNickname())) {
+            throw new AppException(ErrorCode.USER_DUPLICATED, "이미 존재하는 닉네임 입니다.");
+        }
 
         user.addInfo(requestAddInfo);
 

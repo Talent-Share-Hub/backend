@@ -14,4 +14,9 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseCus
 
     @Query("SELECT c FROM Course c JOIN FETCH c.courseImageFile WHERE c.id = :courseId")
     Optional<Course> findByIdWithCourseImageFile(@Param("courseId") Long courseId);
+
+    boolean existsByCourseIdAndUserId(Long courseId, Long aLong);
+
+    @Query("SELECT c FROM Course c JOIN FETCH c.user WHERE c.id = :courseId")
+    Optional<Course> findByIdWithUser(@Param("courseId") Long courseId);
 }

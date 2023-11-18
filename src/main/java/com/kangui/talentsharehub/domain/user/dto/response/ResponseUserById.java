@@ -7,46 +7,49 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @Schema(description = "user-id에 해당하는 사용자 정보 응답")
 @Getter
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@RequiredArgsConstructor
 public class ResponseUserById {
     @Schema(description = "유저 번호", example = "1")
-    private Long id;
+    private final Long id;
 
     @Schema(description = "이름", example = "홍길동")
-    private String name;
+    private final String name;
 
     @Schema(description = "생일", example = "2000-01-01")
-    private LocalDate birthDay;
+    private final LocalDate birthDay;
 
     @Schema(description = "휴대전화 번호", example = "010-1234-5678")
-    private String phoneNumber;
+    private final String phoneNumber;
 
     @Schema(description = "성별", example = "MALE")
-    private Gender gender;
+    private final Gender gender;
 
     @Schema(description = "닉네임", example = "홍길동이올시다")
-    private String nickname;
+    private final String nickname;
 
     @Schema(description = "사용자 이미지 파일 URL")
-    private String userImageUrl;
+    private final String userImageUrl;
 
     @Schema(description = "소개", example = "안녕하세요~ 홍길동입니다.")
-    private String introduction;
+    private final String introduction;
 
-    public ResponseUserById(Users user) {
-        this.id = user.getId();
-        this.name = user.getUserProfile().getName();
-        this.birthDay = user.getUserProfile().getBirthDay();
-        this.phoneNumber = user.getUserProfile().getPhoneNumber();
-        this.gender = user.getUserProfile().getGender();
-        this.nickname = user.getNickname();
-        this.userImageUrl = user.getUserImageFile().getFileUrl();
-        this.introduction = user.getIntroduction();
+    public static ResponseUserById of(final Users user) {
+
+        return new ResponseUserById(
+                user.getId(),
+                user.getUserProfile().getName(),
+                user.getUserProfile().getBirthDay(),
+                user.getUserProfile().getPhoneNumber(),
+                user.getUserProfile().getGender(),
+                user.getNickname(),
+                user.getUserImageFile().getFileUrl(),
+                user.getIntroduction()
+        );
     }
 }

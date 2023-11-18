@@ -15,29 +15,20 @@ import java.util.List;
 
 @Schema(description = "과제 제출 생성 요청")
 @Getter
-@AllArgsConstructor
 public class CreateSubmissionForm {
-
-    @NotNull
-    @Schema(description = "수강생 ID", example = "1")
-    private Long studentId;
-
-    @NotNull
-    @Schema(description = "과제 ID", example = "1")
-    private Long homeworkId;
 
     @NotEmpty
     @Size(max = 100, message = "제출 코멘트는 100자 이하이어야 합니다.")
     @Schema(description = "제출 코멘트", example = "contents")
-    private String contents;
+    private final String contents;
 
-    private List<MultipartFile> attachmentFiles;
+    private final List<MultipartFile> attachmentFiles;
 
-    public Submission toEntity(Homework homework, Student student) {
-        return Submission.builder()
-                .homework(homework)
-                .student(student)
-                .contents(contents)
-                .build();
+    public CreateSubmissionForm(
+            final String contents,
+            final List<MultipartFile> attachmentFiles
+    ) {
+        this.contents = contents;
+        this.attachmentFiles = attachmentFiles;
     }
 }

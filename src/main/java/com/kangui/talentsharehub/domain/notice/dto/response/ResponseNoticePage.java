@@ -8,24 +8,22 @@ import lombok.NoArgsConstructor;
 
 @Schema(description = "공지 응답")
 @Getter
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseNoticePage {
 
     @Schema(description = "공지 번호")
-    private Long id;
+    private final Long id;
 
     @Schema(description = "선생님 이름")
-    private String teacherName;
+    private final String teacherName;
 
     @Schema(description = "공지 제목")
-    private String title;
+    private final String title;
 
     @Schema(description = "공지 조회수")
-    private int views;
+    private final int views;
 
     @QueryProjection
-    public ResponseNoticePage(Long id, String teacherName, String title, int views) {
+    public ResponseNoticePage(final Long id, final String teacherName, final String title, final int views) {
         this.id = id;
         this.teacherName = teacherName;
         this.title = title;

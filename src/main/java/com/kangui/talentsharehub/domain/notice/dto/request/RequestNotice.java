@@ -12,34 +12,20 @@ import lombok.Getter;
 
 @Schema(description = "공지 생성 요청")
 @Getter
-@AllArgsConstructor
 public class RequestNotice {
-
-    @NotNull
-    @Schema(description = "강의 ID", example = "1")
-    private Long courseId;
-
-    @NotNull
-    @Schema(description = "선생님 ID", example = "1")
-    private Long teacherId;
 
     @NotBlank
     @Size(max = 255, message = "과제 제목은 255자 이하이어야 합니다.")
     @Schema(description = "공지 제목", example = "noticeTitle")
-    private String title;
+    private final String title;
 
     @NotBlank
     @Size(max = 1000, message = "과제 본문은 1000자 이하이어야 합니다.")
     @Schema(description = "공지 내용", example = "noticeContents")
-    private String contents;
+    private final String contents;
 
-    public Notice toEntity(Course course, Users user) {
-        return Notice.builder()
-                .user(user)
-                .course(course)
-                .title(title)
-                .contents(contents)
-                .views(0)
-                .build();
+    public RequestNotice(final String title, final String contents) {
+        this.title = title;
+        this.contents = contents;
     }
 }

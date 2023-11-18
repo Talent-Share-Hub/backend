@@ -1,8 +1,6 @@
 package com.kangui.talentsharehub.domain.homework.service;
 
-import com.kangui.talentsharehub.domain.course.entity.Course;
 import com.kangui.talentsharehub.domain.course.entity.Student;
-import com.kangui.talentsharehub.domain.course.repository.course.CourseRepository;
 import com.kangui.talentsharehub.domain.course.repository.student.StudentRepository;
 import com.kangui.talentsharehub.domain.homework.dto.request.CreateSubmissionForm;
 import com.kangui.talentsharehub.domain.homework.dto.request.RequestSubmission;
@@ -15,18 +13,17 @@ import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
 import com.kangui.talentsharehub.global.file.FileStore;
 import com.kangui.talentsharehub.global.file.UploadFile;
+import com.kangui.talentsharehub.global.login.resolver.dto.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class SubmissionService {
@@ -36,38 +33,41 @@ public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final HomeworkRepository homeworkRepository;
-    private final CourseRepository courseRepository;
     private final StudentRepository studentRepository;
     private final FileStore fileStore;
 
-    public List<ResponseSubmission> getSubmissionsByCourseId(Long courseId) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
+    @Transactional(readOnly = true)
+    public ResponseSubmission getSubmissionsById(final Principal principal, final Long submissionId) {
+        final Submission submission = submissionRepository.findByIdWithStudentAndAttachmentFile(submissionId)
+                .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_NOT_FOUND, "존재 하지 않는 제출 과제 입니다."));
 
-        List<Submission> submissions = submissionRepository.findByCourseIdWithAttachmentFile(course.getId());
-
-        return submissions.stream()
-                .map(ResponseSubmission::new)
-                .toList();
-    }
-
-    @Transactional
-    public Long createSubmission(CreateSubmissionForm createSubmissionForm) {
-        Homework homework = homeworkRepository.findByIdWithAttachmentFile(createSubmissionForm.getHomeworkId())
-                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재하지 않습니다."));
-
-        Student student = studentRepository.findById(createSubmissionForm.getStudentId())
-                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND, "존재하지 않는 수강생입니다."));
-
-        List<UploadFile> uploadFiles = null;
-
-        try {
-            uploadFiles = fileStore.storeFiles(createSubmissionForm.getAttachmentFiles(), submissionPath);
-        } catch (IOException e) {
-            throw new AppException(ErrorCode.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
+        if (!submission.getStudent().getId().equals(principal.userId())) {
+           throw new AppException(ErrorCode.FORBIDDEN, "본인만 제출 과제 조회가 가능 합니다.");
         }
 
-        Submission submission = createSubmissionForm.toEntity(homework, student);
+        return ResponseSubmission.of(submission);
+    }
+
+    public Long createSubmission(
+            final Principal principal,
+            final CreateSubmissionForm createSubmissionForm,
+            final Long courseId,
+            final Long homeworkId
+    ) {
+        Homework homework = homeworkRepository.findById(homeworkId)
+                .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재 하지 않습니다."));
+
+        Student student = studentRepository.findByCourseIdAndUserId(courseId, principal.userId())
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND, "존재 하지 않는 수강생 입니다."));
+
+        List<UploadFile> uploadFiles = fileStore.storeFiles(createSubmissionForm.getAttachmentFiles(), submissionPath);
+
+        Submission submission = new Submission(
+                student,
+                homework,
+                createSubmissionForm.getContents(),
+                null
+        );
 
         uploadFiles.stream()
                 .map(UploadFile::toSubmissionAttachmentFile)
@@ -77,27 +77,34 @@ public class SubmissionService {
     }
 
     @Transactional
-    public Long updateSubmission(Long submissionId, RequestSubmission requestSubmission) {
-        Submission submission = submissionRepository.findById(submissionId)
+    public Long updateSubmission(
+            final Principal principal,
+            final Long submissionId,
+            final RequestSubmission requestSubmission
+    ) {
+        Submission submission = submissionRepository.findByIdWithStudent(submissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_NOT_FOUND, "과제 제출이 존재하지 않습니다."));
 
-        submission.updateSubmission(
-                requestSubmission.getContents());
+        if (!submission.getStudent().getId().equals(principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "본인만 제출 과제 수정이 가능 합니다.");
+        }
+
+        submission.updateSubmission(requestSubmission.getContents());
 
         return submission.getId();
     }
 
     @Transactional
-    public void deleteSubmission(Long submissionId) {
-        Submission submission = submissionRepository.findByIdWithAttachmentFile(submissionId)
+    public void deleteSubmission(final Principal principal, final Long submissionId) {
+        Submission submission = submissionRepository.findByIdWithStudentAndAttachmentFile(submissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_NOT_FOUND, "과제 제출이 존재하지 않습니다."));
 
+        if (!submission.getStudent().getId().equals(principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "본인만 제출 과제 수정이 가능 합니다.");
+        }
+
         submission.getSubmissionAttachmentFile().forEach(submissionAttachmentFile -> {
-            try {
-                fileStore.deleteFile(submissionAttachmentFile.getStoreFileName(), submissionPath);
-            } catch (MalformedURLException e) {
-                throw new AppException(ErrorCode.FILE_DELETE_FAILED, "과제 제출 첨부 파일 삭제에 실패했습니다.");
-            }
+            fileStore.deleteFile(submissionAttachmentFile.getStoreFileName(), submissionPath);
         });
 
         submissionRepository.delete(submission);

@@ -29,9 +29,7 @@ public class Rating {
 
     private int rating; // 별점
 
-    @Builder
-    public Rating(Long id, Users user, Category category, int rating) {
-        this.id = id;
+    public Rating(final Users user, final Category category, final int rating) {
         this.user = user;
         this.category = category;
         this.rating = rating;

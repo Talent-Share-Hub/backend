@@ -21,12 +21,15 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value = "/sign-up", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> signUp(@Valid @ModelAttribute SignUpForm signUpForm) {
+    public ResponseEntity<Long> signUp(@Valid @ModelAttribute final SignUpForm signUpForm) {
         return ResponseEntity.status(CREATED).body(authService.signUp(signUpForm));
     }
 
     @PostMapping("/oauth2/add-info")
-    public ResponseEntity<Long> addInfo(@RequestParam("user-id") Long userId, @RequestBody RequestAddInfo requestAddInfo) {
+    public ResponseEntity<Long> addInfo(
+            @RequestParam("user-id")final Long userId,
+            @RequestBody final RequestAddInfo requestAddInfo
+    ) {
         return ResponseEntity.status(CREATED).body(authService.addInfo(userId, requestAddInfo));
     }
 }

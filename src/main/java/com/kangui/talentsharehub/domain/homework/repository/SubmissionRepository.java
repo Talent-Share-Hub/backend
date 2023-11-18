@@ -10,9 +10,16 @@ import java.util.Optional;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
-    @Query("SELECT s FROM Submission s JOIN FETCH s.submissionAttachmentFile WHERE s.course.id =: courseId")
-    List<Submission> findByCourseIdWithAttachmentFile(@Param("courseId") Long courseId);
+    @Query("SELECT s FROM Submission s JOIN FETCH s.student JOIN FETCH s.submissionAttachmentFile WHERE s.id =: submissionId")
+    Optional<Submission> findByIdWithStudentAndAttachmentFile(@Param("submissionId") Long submissionId);
 
-    @Query("SELECT s FROM Submission s JOIN FETCH s.submissionAttachmentFile WHERE s.id =: submissionId")
-    Optional<Submission> findByIdWithAttachmentFile(@Param("submissionId") Long submissionId);
+    @Query("SELECT s FROM Submission s JOIN FETCH s.student WHERE s.id =: submissionId")
+    Optional<Submission> findByIdWithStudent(@Param("submissionId") Long submissionId);
+
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END " +
+            "FROM Submission s " +
+            "JOIN s.student st " +
+            "JOIN st.user u " +
+            "WHERE s.id = :submissionId AND u.id = :userId")
+    boolean validateStudentByIdAndUserId(Long submissionId, Long userId);
 }
