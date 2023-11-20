@@ -51,18 +51,18 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public ResponseCourseById getCourseById(final Long courseId) {
-        final Course course = courseRepository.findCourseWithUserAndCategoryAndCourseImageFileById(courseId)
-                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재하지 않는 강의입니다."));
+        final Course course = courseRepository.findByIdWithUserAndCategoryAndCourseImageFile(courseId)
+                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
 
         return ResponseCourseById.of(course);
     }
 
-    public Long createCourse(final CreateCourseForm createCourseForm, final Principal principal, final Long courseId) {
+    public Long createCourse(final CreateCourseForm createCourseForm, final Principal principal) {
         final Users teacher = userRepository.findById(principal.userId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재 하지 않는 유저 입니다."));
 
-        final Category category = categoryRepository.findById(courseId)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND, "존재하지 않는 카테고리입니다."));
+        final Category category = categoryRepository.findById(createCourseForm.getCategoryId())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND, "존재 하지 않는 카테고리 입니다."));
 
         final UploadFile uploadFile = fileStore.storeFile(createCourseForm.getCourseImage(), coursePath);
 
@@ -89,7 +89,7 @@ public class CourseService {
 
     public Long updateCourseById(final UpdateCourseForm updateCourseForm, final Principal principal, final Long courseId) {
         Course course = courseRepository.findByIdWithCourseImageFile(courseId)
-                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
 
         permissionCheck(principal, course);
 
@@ -109,7 +109,7 @@ public class CourseService {
 
     public void deleteCourseById(final Principal principal, final Long courseId) {
         final Course course = courseRepository.findByIdWithCourseImageFile(courseId)
-                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, ""));
+                .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
 
         permissionCheck(principal, course);
 

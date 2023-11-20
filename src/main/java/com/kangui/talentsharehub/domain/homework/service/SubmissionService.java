@@ -54,13 +54,13 @@ public class SubmissionService {
             final Long courseId,
             final Long homeworkId
     ) {
-        Homework homework = homeworkRepository.findById(homeworkId)
+        final Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재 하지 않습니다."));
 
-        Student student = studentRepository.findByCourseIdAndUserId(courseId, principal.userId())
+        final Student student = studentRepository.findByCourseIdAndUserId(courseId, principal.userId())
                 .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND, "존재 하지 않는 수강생 입니다."));
 
-        List<UploadFile> uploadFiles = fileStore.storeFiles(createSubmissionForm.getAttachmentFiles(), submissionPath);
+        final List<UploadFile> uploadFiles = fileStore.storeFiles(createSubmissionForm.getAttachmentFiles(), submissionPath);
 
         Submission submission = new Submission(
                 student,

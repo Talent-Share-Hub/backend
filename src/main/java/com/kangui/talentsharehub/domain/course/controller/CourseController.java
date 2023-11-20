@@ -55,13 +55,12 @@ public class CourseController {
     }
 
     @Operation(summary = "강의 생성", description = "강의 생성")
-    @PostMapping(value = "/{course-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createCourse(
             @Valid @ModelAttribute final CreateCourseForm createCourseForm,
-            @AuthPrincipal final Principal principal,
-            @PathVariable("course-id") final Long courseId
+            @AuthPrincipal final Principal principal
     ) {
-        return ResponseEntity.status(CREATED).body(courseService.createCourse(createCourseForm, principal, courseId));
+        return ResponseEntity.status(CREATED).body(courseService.createCourse(createCourseForm, principal));
     }
 
     @Operation(summary = "강의 수정", description = "course-id에 해당하는 강의 수정")

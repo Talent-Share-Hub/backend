@@ -47,16 +47,16 @@ public class HomeworkAttachmentFileService {
     public Resource downloadAttachById(
             final HttpServletResponse response, final Principal principal, final Long fileId
     ) {
-        Long courseId = homeworkAttachmentFileRepository.findCourseIdByHomeworkAttachmentFileId(fileId);
-
-        if(!(courseRepository.existsByCourseIdAndUserId(courseId, principal.userId()) ||
-            studentRepository.existsByCourseIdAndUserId(courseId, principal.userId()))) {
-            throw new AppException(ErrorCode.FORBIDDEN, "강의 관계자만 다운로드가 가능합니다.");
-        }
-
         final HomeworkAttachmentFile homeworkAttachmentFile = homeworkAttachmentFileRepository.findById(fileId)
                 .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_ATTACHMENT_FILE_NOT_FOUND
-                                                        , fileId + "과제 첨부파일이 존재하지 않습니다."));
+                        , "과제 첨부 파일이 존재 하지 않습니다."));
+
+        Long courseId = homeworkAttachmentFileRepository.findCourseIdByHomeworkAttachmentFileId(fileId);
+
+        if(!(courseRepository.existsByCourseIdAndTeacherId(courseId, principal.userId()) ||
+            studentRepository.existsByCourseIdAndUserId(courseId, principal.userId()))) {
+            throw new AppException(ErrorCode.FORBIDDEN, "강의 관계자만 다운로드가 가능 합니다.");
+        }
 
         final String uploadFileName = homeworkAttachmentFile.getUploadFileName();
         final String storeFileName = homeworkAttachmentFile.getStoreFileName();
@@ -80,12 +80,12 @@ public class HomeworkAttachmentFileService {
     public Long addAttachmentFileByHomeworkId(
             final Principal principal, final Long homeworkId, final MultipartFile attachmentFile
     ) {
-        if(homeworkRepository.validateTeacherByIdAndUserId(homeworkId, principal.userId())) {
-            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 첨부파일 추가가 가능합니다.");
-        }
-
         final Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재하지 않습니다."));
+
+        if(!homeworkRepository.validateTeacherByIdAndUserId(homeworkId, principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 첨부파일 추가가 가능합니다.");
+        }
 
         UploadFile uploadFile = fileStore.storeFile(attachmentFile, homeworkPath);
 
@@ -93,15 +93,13 @@ public class HomeworkAttachmentFileService {
     }
 
     public void deleteAttachmentFileById(final Principal principal, final Long fileId) {
-        Long courseId = homeworkAttachmentFileRepository.findCourseIdByHomeworkAttachmentFileId(fileId);
-
-        if(courseRepository.existsByCourseIdAndUserId(courseId, principal.userId())) {
-            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 첨부파일 삭제가 가능합니다.");
-        }
-
         HomeworkAttachmentFile homeworkAttachmentFile = homeworkAttachmentFileRepository.findById(fileId)
                 .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_ATTACHMENT_FILE_NOT_FOUND
-                                                        , fileId + "과제 첨부파일이 존재하지 않습니다."));
+                        , fileId + "과제 첨부파일이 존재하지 않습니다."));
+
+        if(!homeworkAttachmentFileRepository.validateTeacherByIdAndUserId(fileId, principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 첨부파일 삭제가 가능합니다.");
+        }
 
         fileStore.deleteFile(homeworkAttachmentFile.getStoreFileName(), homeworkPath);
 

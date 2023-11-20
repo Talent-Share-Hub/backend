@@ -34,7 +34,7 @@ public class ResponseHomework {
     @Schema(description = "마감 시간")
     private final LocalDateTime endDate;
 
-    public static ResponseHomework of(Homework homework) {
+    public static ResponseHomework of(final Homework homework) {
         return new ResponseHomework(
                 homework.getId(),
                 homework.getTitle(),

@@ -59,15 +59,15 @@ public class UpdateCourseForm {
     private final LocalDate endDate;
 
     public UpdateCourseForm(
-            MultipartFile courseImage,
-            String title,
-            String description,
-            String reference,
-            String link,
-            String contact,
-            int capacity,
-            LocalDate startDate,
-            LocalDate endDate) {
+            final MultipartFile courseImage,
+            final String title,
+            final String description,
+            final String reference,
+            final String link,
+            final String contact,
+            final int capacity,
+            final LocalDate startDate,
+            final LocalDate endDate) {
         checkDateRange(startDate, endDate);
         this.courseImage = courseImage;
         this.title = title;

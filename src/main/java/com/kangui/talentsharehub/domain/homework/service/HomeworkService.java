@@ -41,12 +41,12 @@ public class HomeworkService {
             throw new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다.");
         }
 
-        if(courseRepository.existsByCourseIdAndUserId(courseId, principal.userId())
-                && studentRepository.existsByCourseIdAndUserId(courseId, principal.userId())) {
+        if(!(courseRepository.existsByCourseIdAndTeacherId(courseId, principal.userId()) ||
+                studentRepository.existsByCourseIdAndUserId(courseId, principal.userId()))) {
             throw new AppException(ErrorCode.FORBIDDEN, "강의 관계자만 과제 조회가 가능합니다.");
         }
 
-        List<Homework> homeworks = homeworkRepository.findByCourseIdWithAttachmentFile(courseId);
+        final List<Homework> homeworks = homeworkRepository.findByCourseIdWithAttachmentFile(courseId);
 
         return homeworks.stream()
                 .map(ResponseHomework::of)
@@ -54,20 +54,20 @@ public class HomeworkService {
     }
 
     public Long createHomework(
-            final Principal principal,
             final CreateHomeworkForm createHomeworkForm,
+            final Principal principal,
             final Long courseId
     ) {
-        Course course = courseRepository.findByIdWithUser(courseId)
+        final Course course = courseRepository.findByIdWithUser(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의입니다."));
 
-        if(course.getUser().getId().equals(principal.userId())) {
+        if(!course.getUser().getId().equals(principal.userId())) {
             throw new AppException(ErrorCode.FORBIDDEN, "선생님만 과제 생성이 가능합니다.");
         }
 
-        List<UploadFile> uploadFiles = fileStore.storeFiles(createHomeworkForm.getAttachmentFiles(), homeworkPath);
+        final List<UploadFile> uploadFiles = fileStore.storeFiles(createHomeworkForm.getAttachmentFiles(), homeworkPath);
 
-        Homework homework = new Homework(
+        final Homework homework = new Homework(
                 course,
                 createHomeworkForm.getTitle(),
                 createHomeworkForm.getContents(),
@@ -84,30 +84,31 @@ public class HomeworkService {
     }
 
     public Long updateHomework(
-            final Principal principal,
-            final Long homeworkId,
             final RequestUpdateHomework requestUpdateHomework,
-            final Long courseId
+            final Principal principal,
+            final Long homeworkId
     ) {
-        if(courseRepository.existsByCourseIdAndUserId(courseId, principal.userId())) {
-            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 과제 수정이 가능합니다.");
-        }
-
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재하지 않습니다."));
+
+        if(!homeworkRepository.validateTeacherByIdAndUserId(homeworkId, principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 과제 수정이 가능합니다.");
+
+        }
 
         homework.updateHomework(requestUpdateHomework);
 
         return homework.getId();
     }
 
-    public void deleteHomework(final Principal principal, final Long homeworkId, final Long courseId) {
-        if(courseRepository.existsByCourseIdAndUserId(courseId, principal.userId())) {
-            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 과제 수정이 가능합니다.");
-        }
-
-        final Homework homework = homeworkRepository.findByIdWithAttachmentFile(homeworkId)
+    public void deleteHomework(final Principal principal, final Long homeworkId) {
+        Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new AppException(ErrorCode.HOMEWORK_NOT_FOUND, "과제가 존재하지 않습니다."));
+
+        if(!homeworkRepository.validateTeacherByIdAndUserId(homeworkId, principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "선생님만 과제 수정이 가능합니다.");
+
+        }
 
         homework.getHomeworkAttachmentFile().forEach(homeworkAttachmentFile -> {
             fileStore.deleteFile(homeworkAttachmentFile.getStoreFileName(), homeworkPath);

@@ -72,6 +72,10 @@ public class Users extends TimeStampedEntity {
         this.refreshToken = refreshToken;
     }
 
+    public Users(SocialType socialType, String id, Role role) {
+        this(null, null, null, null, null, null, role, socialType, id, null);
+    }
+
     public void changeUserImageFile(final UserImageFile userImageFile) {
         this.userImageFile = userImageFile;
         userImageFile.changeUser(this);

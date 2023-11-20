@@ -23,7 +23,7 @@ public class ResponseCourseById {
     private final String teacherName;
 
     @Schema(description = "카테고리")
-    private final Category category;
+    private final String category;
 
     @Schema(description = "강의 이미지 파일 url")
     private final String courseImageUrl;
@@ -63,7 +63,7 @@ public class ResponseCourseById {
         return new ResponseCourseById(
                 course.getId(),
                 course.getUser().getUserProfile().getName(),
-                course.getCategory(),
+                course.getCategory().getName(),
                 course.getCourseImageFile().getFileUrl(),
                 course.getTitle(),
                 course.getDescription(),

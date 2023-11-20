@@ -42,16 +42,16 @@ public class SubmissionAttachmentFileService {
     @Transactional(readOnly = true)
     public Resource downloadAttachById(
             final HttpServletResponse response, final Principal principal, final Long fileId) {
+        final SubmissionAttachmentFile submissionAttachmentFile = submissionAttachmentFileRepository.findById(fileId)
+                .orElseThrow(() -> new AppException(
+                        ErrorCode.SUBMISSION_ATTACHMENT_FILE_NOT_FOUND,
+                        "과제 첨부파일이 존재하지 않습니다."));
+
         if(!(submissionAttachmentFileRepository.validateStudentByFileIdAndUserId(fileId, principal.userId()) ||
                 submissionAttachmentFileRepository.validateTeacherByFileIdAndUserId(fileId, principal.userId()))
         ) {
             throw new AppException(ErrorCode.FORBIDDEN, "첨부파일을 다운로드할 권한이 없습니다.");
         }
-
-        SubmissionAttachmentFile submissionAttachmentFile = submissionAttachmentFileRepository.findById(fileId)
-                .orElseThrow(() -> new AppException(
-                        ErrorCode.SUBMISSION_ATTACHMENT_FILE_NOT_FOUND,
-                        "과제 첨부파일이 존재하지 않습니다."));
 
         final String uploadFileName = submissionAttachmentFile.getUploadFileName();
         final String storeFileName = submissionAttachmentFile.getStoreFileName();
@@ -75,27 +75,27 @@ public class SubmissionAttachmentFileService {
     public Long addAttachmentFileBySubmissionId(
             final Principal principal, final MultipartFile attachmentFile, final Long submissionId
     ) {
+        final Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_NOT_FOUND, "제출한 과제가 존재하지 않습니다."));
+
         if(!submissionRepository.validateStudentByIdAndUserId(submissionId, principal.userId())) {
             throw new AppException(ErrorCode.FORBIDDEN, "첨부파일을 추가할 권한이 없습니다.");
         }
 
-        Submission submission = submissionRepository.findById(submissionId)
-                .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_NOT_FOUND, "제출한 과제가 존재하지 않습니다."));
-
-        UploadFile uploadFile = fileStore.storeFile(attachmentFile, submissionPath);
+        final UploadFile uploadFile = fileStore.storeFile(attachmentFile, submissionPath);
 
         return submissionAttachmentFileRepository.save(uploadFile.toSubmissionAttachmentFile(submission)).getId();
     }
 
-    public void deleteAttachmentFileById(Principal principal, Long fileId) {
+    public void deleteAttachmentFileById(final Principal principal, final Long fileId) {
+        SubmissionAttachmentFile submissionAttachmentFile = submissionAttachmentFileRepository.findById(fileId)
+                .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_ATTACHMENT_FILE_NOT_FOUND,
+                        "과제 제출 첨부파일이 존재하지 않습니다."));
+
         if(!submissionAttachmentFileRepository.validateStudentByFileIdAndUserId(fileId, principal.userId())
         ) {
             throw new AppException(ErrorCode.FORBIDDEN, "첨부파일을 삭제할 권한이 없습니다.");
         }
-
-        SubmissionAttachmentFile submissionAttachmentFile = submissionAttachmentFileRepository.findById(fileId)
-                .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_ATTACHMENT_FILE_NOT_FOUND,
-                                                    "과제 제출 첨부파일이 존재하지 않습니다."));
 
         fileStore.deleteFile(submissionAttachmentFile.getStoreFileName(), submissionPath);
 

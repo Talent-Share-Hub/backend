@@ -25,6 +25,10 @@ public class CreateCourseForm {
     @Schema(description = "강의 메인 이미지")
     private final MultipartFile courseImage;
 
+    @NotNull
+    @Schema(description = "카테고리 ID", example = "1")
+    private final Long categoryId;
+
     @NotBlank
     @Schema(description = "제목", example = "title")
     private final String title;
@@ -58,17 +62,19 @@ public class CreateCourseForm {
     private final LocalDate endDate;
 
     public CreateCourseForm(
-            MultipartFile courseImage,
-            String title,
-            String description,
-            String reference,
-            String link,
-            String contact,
-            int capacity,
-            LocalDate startDate,
-            LocalDate endDate) {
+            final MultipartFile courseImage,
+            final Long categoryId,
+            final String title,
+            final String description,
+            final String reference,
+            final String link,
+            final String contact,
+            final int capacity,
+            final LocalDate startDate,
+            final LocalDate endDate) {
         checkDateRange(startDate, endDate);
         this.courseImage = courseImage;
+        this.categoryId = categoryId;
         this.title = title;
         this.description = description;
         this.reference = reference;

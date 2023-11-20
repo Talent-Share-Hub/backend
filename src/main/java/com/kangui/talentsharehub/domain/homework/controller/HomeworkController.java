@@ -38,33 +38,32 @@ public class HomeworkController {
     @Operation(summary = "과제 생성", description = "과제 생성")
     @PostMapping
     public ResponseEntity<Long> createHomework(
-            @AuthPrincipal final Principal principal,
             @Valid @ModelAttribute final CreateHomeworkForm requestCreateHomework,
+            @AuthPrincipal final Principal principal,
             @PathVariable("course-id") final Long courseId
     ) {
-        return ResponseEntity.status(CREATED).body(homeworkService.createHomework(principal, requestCreateHomework, courseId));
+        return ResponseEntity.status(CREATED)
+                                .body(homeworkService.createHomework(requestCreateHomework, principal, courseId));
     }
 
     @Operation(summary = "과제 수정", description = "homework-id에 해당하는 과제 수정")
     @PutMapping("/{homework-id}")
     public ResponseEntity<Long> updateHomework(
-            @AuthPrincipal final Principal principal,
-            @PathVariable("homework-id") final Long homeworkId,
             @Valid @ModelAttribute final RequestUpdateHomework requestUpdateHomework,
-            @PathVariable("course-id") final Long courseId
+            @AuthPrincipal final Principal principal,
+            @PathVariable("homework-id") final Long homeworkId
     ) {
         return ResponseEntity.status(OK).body(homeworkService.updateHomework(
-                principal, homeworkId, requestUpdateHomework, courseId));
+                requestUpdateHomework, principal, homeworkId));
     }
 
     @Operation(summary = "과제 삭제", description = "homework-id에 해당하는 과제 삭제")
     @DeleteMapping("/{homework-id}")
     public ResponseEntity<Void> deleteHomework(
             @AuthPrincipal final Principal principal,
-            @PathVariable("homework-id") final Long homeworkId,
-            @PathVariable("course-id") final Long courseId
+            @PathVariable("homework-id") final Long homeworkId
     ) {
-        homeworkService.deleteHomework(principal, homeworkId, courseId);
+        homeworkService.deleteHomework(principal, homeworkId);
         return ResponseEntity.noContent().build();
     }
 }

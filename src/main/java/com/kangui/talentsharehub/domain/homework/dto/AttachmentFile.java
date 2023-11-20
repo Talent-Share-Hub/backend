@@ -15,7 +15,7 @@ public class AttachmentFile {
 
     private final String fileUrl;
 
-    public static AttachmentFile of(HomeworkAttachmentFile homeworkAttachmentFile) {
+    public static AttachmentFile of(final HomeworkAttachmentFile homeworkAttachmentFile) {
         return new AttachmentFile(
                 homeworkAttachmentFile.getId(),
                 homeworkAttachmentFile.getUploadFileName(),
@@ -23,7 +23,7 @@ public class AttachmentFile {
         );
     }
 
-    public static AttachmentFile of(SubmissionAttachmentFile submissionAttachmentFile) {
+    public static AttachmentFile of(final SubmissionAttachmentFile submissionAttachmentFile) {
         return new AttachmentFile(
                 submissionAttachmentFile.getId(),
                 submissionAttachmentFile.getUploadFileName(),

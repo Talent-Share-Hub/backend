@@ -9,9 +9,6 @@ import java.util.Optional;
 
 public interface SubmissionAttachmentFileRepository extends JpaRepository<SubmissionAttachmentFile, Long> {
 
-
-    Optional<SubmissionAttachmentFile> findByIdWithSubmissionAndStudent(@Param("fileId") Long fileId);
-
     @Query(
             "SELECT CASE WHEN COUNT(saf) > 0 THEN true ELSE false END " +
             "FROM SubmissionAttachmentFile saf " +
@@ -22,12 +19,14 @@ public interface SubmissionAttachmentFileRepository extends JpaRepository<Submis
     )
     boolean validateStudentByFileIdAndUserId(@Param("fileId") Long fileId, @Param("userId") Long userId);
 
-    @Query("SELECT CASE WHEN COUNT(saf) > 0 THEN true ELSE false END " +
+    @Query(
+            "SELECT CASE WHEN COUNT(saf) > 0 THEN true ELSE false END " +
             "FROM SubmissionAttachmentFile saf " +
             "JOIN saf.submission s " +
             "JOIN s.student st " +
             "JOIN st.course c " +
-            "JOIN c.user u" +
-            "WHERE saf.id = :fileId AND u.id = :userId")
+            "JOIN c.user u " +
+            "WHERE saf.id = :fileId AND u.id = :userId"
+    )
     boolean validateTeacherByFileIdAndUserId(@Param("fileId") Long fileId, @Param("userId") Long userId);
 }

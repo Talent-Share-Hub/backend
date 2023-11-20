@@ -42,12 +42,14 @@ public class NoticeService {
     }
 
     public ResponseNoticeById getNoticeById(final Principal principal, final Long noticeId, final Long courseId) {
-        if(studentRepository.existsByCourseIdAndUserId(courseId, principal.userId())) {
+        Notice notice = noticeRepository.findByIdWIthCourse(noticeId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOTICE_NOT_FOUND, "존재 하지 않는 공지 입니다."));
+
+        if(!(notice.getCourse().getId().equals(courseId) ||
+                courseRepository.existsByCourseIdAndTeacherId(courseId, principal.userId()) ||
+                studentRepository.existsByCourseIdAndUserId(courseId, principal.userId()))) {
             throw new AppException(ErrorCode.FORBIDDEN, "공지를 조회할 권한이 없습니다.");
         }
-
-        Notice notice = noticeRepository.findByIdWithUser(noticeId)
-                .orElseThrow(() -> new AppException(ErrorCode.NOTICE_NOT_FOUND, "존재 하지 않는 공지 입니다."));
 
         notice.increaseView();
 
@@ -55,7 +57,7 @@ public class NoticeService {
     }
 
     public Long createNotice(final Principal principal, final RequestNotice requestNotice, final Long courseId) {
-        final Course course = courseRepository.findById(courseId)
+        final Course course = courseRepository.findByIdWithUser(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
 
         if(!course.getUser().getId().equals(principal.userId())) {
@@ -65,7 +67,7 @@ public class NoticeService {
         final Users user = userRepository.findById(principal.userId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재 하지 않는 사용자 입니다."));
 
-        Notice notice = new Notice(
+        final Notice notice = new Notice(
                 user,
                 course,
                 requestNotice.getTitle(),

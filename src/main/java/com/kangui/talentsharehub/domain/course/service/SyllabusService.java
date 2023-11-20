@@ -36,13 +36,18 @@ public class SyllabusService {
     }
 
     public Long createSyllabus(
-            final RequestCreateSyllabus requestCreateSyllabus, final Principal principal, final Long courseId) {
+            final RequestCreateSyllabus requestCreateSyllabus, final Principal principal, final Long courseId
+    ) {
         if (syllabusRepository.existsByWeek(requestCreateSyllabus.getWeek())) {
             throw new AppException(ErrorCode.SYLLABUS_DUPLICATED, "이미 존재하는 주차입니다.");
         }
-       final Course course = courseRepository.findById(courseId)
+
+        final Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재 하지 않는 강의 입니다."));
-        permissionCheck(principal, course);
+
+        if (!course.getUser().getId().equals(principal.userId())) {
+            throw new AppException(ErrorCode.FORBIDDEN, "강의를 수정할 권한이 없습니다.");
+        }
 
         Syllabus syllabus = new Syllabus(
                 course,
@@ -51,12 +56,6 @@ public class SyllabusService {
         );
 
         return syllabusRepository.save(syllabus).getId();
-    }
-
-    private void permissionCheck(final Principal principal, final Course course) {
-        if (!course.getUser().getId().equals(principal.userId())) {
-            throw new AppException(ErrorCode.FORBIDDEN, "강의를 수정할 권한이 없습니다.");
-        }
     }
 
 }

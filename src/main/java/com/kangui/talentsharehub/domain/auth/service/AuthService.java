@@ -11,6 +11,11 @@ import com.kangui.talentsharehub.global.exception.ErrorCode;
 import com.kangui.talentsharehub.domain.user.repository.UserRepository;
 import com.kangui.talentsharehub.global.file.FileStore;
 import com.kangui.talentsharehub.global.file.UploadFile;
+import com.kangui.talentsharehub.global.jwt.service.JwtService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +37,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileStore fileStore;
+    private final JwtService jwtService;
 
     public Long signUp(final SignUpForm signUpForm) {
         if (userRepository.existsByLoginId(signUpForm.getLoginId())) {
@@ -84,5 +90,36 @@ public class AuthService {
         user.addInfo(requestAddInfo);
 
         return user.getId();
+    }
+
+    public void reissue(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtService.extractRefreshToken(request)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED, "RefreshToken이 존재하지 않습니다."));
+
+        if (!jwtService.isRefreshTokenValid(refreshToken)) {
+            throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN, "유효하지 않은 refreshtoken 입니다.");
+        }
+
+        userRepository.findByRefreshToken(refreshToken)
+                .ifPresentOrElse(
+                        user -> {
+                            String reIssuedRefreshToken = reIssueRefreshToken(user);
+                            jwtService.sendAccessAndRefreshToken(
+                                    response,
+                                    jwtService.createAccessToken(user.getId()),
+                                    reIssuedRefreshToken
+                            );
+                        },
+                        () -> {
+                            throw new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 유저가 없습니다.");
+                        }
+                );
+    }
+
+    private String reIssueRefreshToken(Users user) {
+        String reIssuedRefreshToken = jwtService.createRefreshToken();
+        user.updateRefreshToken(reIssuedRefreshToken);
+        userRepository.saveAndFlush(user);
+        return reIssuedRefreshToken;
     }
 }

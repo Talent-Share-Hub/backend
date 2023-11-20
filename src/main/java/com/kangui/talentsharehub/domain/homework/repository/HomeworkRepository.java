@@ -10,21 +10,21 @@ import java.util.Optional;
 
 public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 
-    @Query("SELECT h FROM Homework h WHERE h.course.id = :courseId")
-    List<Homework> findByCourseId(@Param("courseId") Long courseId);
-
-    @Query("SELECT h FROM Homework h JOIN FETCH h.homeworkAttachmentFile WHERE h.course.id =: courseId")
+    @Query("SELECT h FROM Homework h JOIN FETCH h.homeworkAttachmentFile WHERE h.course.id = :courseId")
     List<Homework> findByCourseIdWithAttachmentFile(@Param("courseId") Long courseId);
 
     @Query("SELECT h FROM Homework h JOIN FETCH h.homeworkAttachmentFile")
     Optional<Homework> findByIdWithAttachmentFile(Long homeworkId);
 
     @Query(
-            "SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END" +
+            "SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END " +
             "FROM Homework h " +
             "JOIN h.course c " +
-            "JOIN c.user u" +
+            "JOIN c.user u " +
             "WHERE h.id = :homeworkId AND u.id = :userId"
     )
     boolean validateTeacherByIdAndUserId(@Param("homeworkId") Long homeworkId, @Param("userId") Long userId);
+
+    @Query("SELECT h.course.id FROM Homework h WHERE h.id = :homeworkId")
+    Long findCourseIdById(@Param("homeworkId") Long homeworkId);
 }
