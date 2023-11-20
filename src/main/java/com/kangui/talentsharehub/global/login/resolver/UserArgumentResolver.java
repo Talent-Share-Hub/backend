@@ -31,9 +31,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         final String accessToken = jwtService.extractAccessToken((HttpServletRequest) webRequest)
                 .orElseThrow(() -> new AppException(ErrorCode.NO_HAVE_AUTHORIZATION_HEADER, "인증 헤더가 존재 하지 않습니다."));
-        final Long userId = Long.valueOf(jwtService.extractUserId(accessToken)
+        final Long userId = jwtService.extractUserId(accessToken)
                 .orElseThrow(() -> new AppException(ErrorCode.FAIL_AUTHENTICATION,
-                                                        "인증에 실패 했습니다. (JWT AccessToken Payload UserId 누락")));
+                                    "인증에 실패 했습니다. (JWT AccessToken Payload UserId 누락"));
 
         return new Principal(userId);
     }

@@ -78,20 +78,21 @@ public class SecurityConfig {
                     authorize
                             // 인증 절차 없이 접근할 URL 지정
                             .requestMatchers("/", "/favicon.ico").permitAll()
-                            .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                            .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**").permitAll()
+                            .requestMatchers("/swagger-ui/**").permitAll()
                             // 나머지 리소스는 인증 절차를 거친 사용자만 접근이 가능하다는 의미
                             .anyRequest().authenticated();
                 })
                 // 소셜 로그인 설정
                 // Http Secyrity의 OAuth2 로그인 관련 OAuth2LoginConfigurer를 통해 OAuth2 로그인에 관련된 다양한 기능을 사용할 수 있도록 한다.
-                .oauth2Login(oauth2Configurer -> oauth2Configurer
-                        // OAuth2 로그인이 성공했을 때 처리할 핸들러 설정
-                        .successHandler(oAuth2LoginSuccessHandler)
-//                        // 실패했을 때
-//                        .failureHandler(oAuth2LoginFailureHandler)
-//                        // OAuth2 로그인의 로직을 담당하는 Service 설정
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2UserService))
-                )
+//                .oauth2Login(oauth2Configurer -> oauth2Configurer
+//                        // OAuth2 로그인이 성공했을 때 처리할 핸들러 설정
+//                        .successHandler(oAuth2LoginSuccessHandler)
+////                        // 실패했을 때
+////                        .failureHandler(oAuth2LoginFailureHandler)
+////                        // OAuth2 로그인의 로직을 담당하는 Service 설정
+//                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2UserService))
+//                )
                 /*
                     원래 스프링 시큐리티 필터 순서가 LogoutFilter 이후에 로그인 필터 동작
                     따라서, LogoutFilter 이후에 우리가 만든 필터 동작하도록 설정

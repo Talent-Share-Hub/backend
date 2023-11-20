@@ -14,6 +14,8 @@ public enum ErrorCode {
 
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, ""),
     INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, ""),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, ""),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, ""),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
@@ -39,7 +41,8 @@ public enum ErrorCode {
     NO_HAVE_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, ""),
     FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, ""),
 
-    FORBIDDEN(HttpStatus.FORBIDDEN, "");
+    FORBIDDEN(HttpStatus.FORBIDDEN, ""),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "");
 
     private final HttpStatus httpStatus;
     private final String message;

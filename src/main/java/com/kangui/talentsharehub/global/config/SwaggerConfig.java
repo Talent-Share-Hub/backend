@@ -1,17 +1,25 @@
 package com.kangui.talentsharehub.global.config;
 
+import com.kangui.talentsharehub.global.login.resolver.annotation.AuthPrincipal;
+import com.kangui.talentsharehub.global.login.resolver.dto.Principal;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
-@Component
+@Configuration
 public class SwaggerConfig {
+
+    static {
+        SpringDocUtils.getConfig()
+                .addAnnotationsToIgnore(AuthPrincipal.class);
+    }
 
     @Bean
     public OpenAPI openAPI() {

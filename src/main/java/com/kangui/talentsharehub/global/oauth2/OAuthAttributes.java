@@ -86,13 +86,10 @@ public class OAuthAttributes {
      * role은 GUEST로 설정
      */
     public Users toEntity(SocialType socialType, OAuth2UserInfo oAuth2UserInfo) {
-        return Users.builder()
-                .socialType(socialType)
-                .socialId(oAuth2UserInfo.getId())
-                .userImageFile(UserImageFile.builder()
-                        .fileUrl(oAuth2UserInfo.getImageUrl())
-                        .build())
-                .role(Role.GUEST)
-                .build();
+        return new Users(
+                socialType,
+                oAuth2UserInfo.getId(),
+                Role.GUEST
+        );
     }
 }

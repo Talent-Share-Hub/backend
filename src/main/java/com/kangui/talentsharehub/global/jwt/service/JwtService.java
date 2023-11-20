@@ -2,6 +2,7 @@ package com.kangui.talentsharehub.global.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.kangui.talentsharehub.domain.user.entity.Users;
 import com.kangui.talentsharehub.global.exception.AppException;
 import com.kangui.talentsharehub.global.exception.ErrorCode;
 import com.kangui.talentsharehub.domain.user.repository.UserRepository;
@@ -42,7 +43,7 @@ public class JwtService {
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-    private static final String USER_ID_CLAIM = "loginId";
+    private static final String USER_ID_CLAIM = "userId";
     private static final String BEARER = "Bearer ";
 
     private final UserRepository userRepository;
@@ -104,8 +105,8 @@ public class JwtService {
      */
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
+                .filter(accessToken -> accessToken.startsWith(BEARER))
+                .map(accessToken -> accessToken.replace(BEARER, ""));
     }
 
     /**
@@ -126,14 +127,16 @@ public class JwtService {
      * 유효하다면 getClaim()으로 로그인 ID 추출
      * 유효하지 않다면 빈 Optional 객체 반환
      */
-    public Optional<String> extractUserId(String accessToken) {
+    public Optional<Long> extractUserId(String accessToken) {
         try {
+            log.info("extractUserId {}", accessToken);
+
             // 토큰 유효성 검사하는 데에 사용할 알고리즘이 있는 JWT verifier builder 반환
             return Optional.ofNullable(JWT.require(Algorithm.HMAC512(accessSecretKey))
                     .build() // 반환된 빌더로 JWT verifier 생성
                     .verify(accessToken) // accessToken을 검증하고 유효하지 않다면 예외 발생
                     .getClaim(USER_ID_CLAIM) // claim(userID) 가져오기
-                    .asString());
+                    .asLong());
         } catch (Exception e) {
             log.error("액세스 토큰이 유효하지 않습니다.");
             return Optional.empty();
@@ -144,11 +147,10 @@ public class JwtService {
      * RefreshToken DB 저장(업데이트)
      */
     public void updateRefreshToken(String loginId, String refreshToken) {
-        userRepository.findByLoginId(loginId)
-                .ifPresentOrElse(
-                        user -> user.updateRefreshToken(refreshToken),
-                        () -> new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 회원이 없습니다.")
-                );
+        Users user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "일치하는 회원이 없습니다."));
+
+        user.updateRefreshToken(refreshToken);
     }
 
     /**
@@ -156,6 +158,7 @@ public class JwtService {
      */
     public boolean isAccessTokenValid(String accessToken) {
         try {
+            log.info(accessToken);
             JWT.require(Algorithm.HMAC512(accessSecretKey)).build().verify(accessToken);
             return true;
         } catch (Exception e) {
