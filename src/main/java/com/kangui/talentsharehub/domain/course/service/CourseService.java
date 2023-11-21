@@ -58,6 +58,8 @@ public class CourseService {
     }
 
     public Long createCourse(final CreateCourseForm createCourseForm, final Principal principal) {
+        log.info("userId {}", principal.userId());
+
         final Users teacher = userRepository.findById(principal.userId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "존재 하지 않는 유저 입니다."));
 

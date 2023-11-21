@@ -40,8 +40,6 @@ import java.util.Arrays;
 @Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-    private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
-
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
@@ -49,14 +47,17 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String[] noCheckURL = NO_CHECK_URL.split(",");
+        String path = request.getRequestURI();
 
-        if (Arrays.stream(noCheckURL).anyMatch(url -> request.getRequestURI().equals(url))) {
-            filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
-            return; // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
+        log.info("Path {}", path);
+
+        if (path.startsWith("/login") || path.startsWith("/api/auth") || path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui") || "/".equals(path) || "/favicon.ico".equals(path)) {
+            log.info("JWT 인증을 무시 합니다.");
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        String accessToken = jwtService.extractAccessToken(request)
+            String accessToken = jwtService.extractAccessToken(request)
                 .orElseThrow(() -> new AppException(ErrorCode.NO_HAVE_AUTHORIZATION_HEADER,
                                                     "해당 API를 사용하기 위해선 인증이 필요합니다."));
 

@@ -26,7 +26,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
     // 강의 수강생 조회
     @Transactional(readOnly = true)
@@ -46,6 +46,14 @@ public class StudentService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND, "존재하지 않는 강의입니다."));
 
+        if(studentRepository.existsByCourseIdAndUserId(courseId, principal.userId())) {
+            throw new AppException(ErrorCode.STUDENT_DUPLICATED, "이미 가입한 수강생 입니다.");
+        }
+
+        if(course.getUser().getId().equals(principal.userId())) {
+            throw new AppException(ErrorCode.STUDENT_TEACHER_ENROLL, "강사는 수강생으로 등록할 수 없습니다.");
+        }
+
         if(course.isFull()) {
             throw new AppException(ErrorCode.STUDENT_EXCEED, "수강생 인원 초과 입니다.");
         }
@@ -62,7 +70,7 @@ public class StudentService {
 
     // 강의 수강생 삭제
     public void removeStudentFromCourse(final Principal principal, final Long courseId) {
-        final Student student = studentRepository.findByUserIdAndCourseId(principal.userId(), courseId)
+        final Student student = studentRepository.findByCourseIdAndUserId(courseId, principal.userId())
                 .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND, "존재하지 않는 수강생입니다."));
 
         studentRepository.delete(student);

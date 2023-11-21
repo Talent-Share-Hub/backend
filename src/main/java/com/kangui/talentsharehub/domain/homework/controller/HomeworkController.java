@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +37,7 @@ public class HomeworkController {
     }
 
     @Operation(summary = "과제 생성", description = "과제 생성")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createHomework(
             @Valid @ModelAttribute final CreateHomeworkForm requestCreateHomework,
             @AuthPrincipal final Principal principal,
@@ -49,7 +50,7 @@ public class HomeworkController {
     @Operation(summary = "과제 수정", description = "homework-id에 해당하는 과제 수정")
     @PutMapping("/{homework-id}")
     public ResponseEntity<Long> updateHomework(
-            @Valid @ModelAttribute final RequestUpdateHomework requestUpdateHomework,
+            @Valid @RequestBody final RequestUpdateHomework requestUpdateHomework,
             @AuthPrincipal final Principal principal,
             @PathVariable("homework-id") final Long homeworkId
     ) {

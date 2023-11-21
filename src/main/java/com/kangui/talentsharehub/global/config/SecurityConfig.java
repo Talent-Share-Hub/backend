@@ -25,6 +25,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @RequiredArgsConstructor
@@ -77,9 +78,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> {
                     authorize
                             // 인증 절차 없이 접근할 URL 지정
-                            .requestMatchers("/", "/favicon.ico").permitAll()
-                            .requestMatchers("/login", "/api/auth/**", "/v3/api-docs/**").permitAll()
-                            .requestMatchers("/swagger-ui/**").permitAll()
+                            .requestMatchers("/", "/favicon.ico", "/login", "/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                             // 나머지 리소스는 인증 절차를 거친 사용자만 접근이 가능하다는 의미
                             .anyRequest().authenticated();
                 })

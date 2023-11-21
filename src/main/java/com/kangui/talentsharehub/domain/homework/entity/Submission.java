@@ -48,6 +48,14 @@ public class Submission extends TimeStampedEntity {
         this.submissionAttachmentFile = submissionAttachmentFile;
     }
 
+    public Submission(
+            final Student student,
+            final Homework homework,
+            final String contents
+    ) {
+        this(student, homework, contents, new ArrayList<>());
+    }
+
     public void addSubmissionAttachmentFile(final SubmissionAttachmentFile submissionAttachmentFile) {
         this.submissionAttachmentFile.add(submissionAttachmentFile);
         submissionAttachmentFile.changeSubmission(this);

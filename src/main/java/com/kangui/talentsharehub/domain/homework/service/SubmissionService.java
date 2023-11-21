@@ -3,7 +3,7 @@ package com.kangui.talentsharehub.domain.homework.service;
 import com.kangui.talentsharehub.domain.course.entity.Student;
 import com.kangui.talentsharehub.domain.course.repository.student.StudentRepository;
 import com.kangui.talentsharehub.domain.homework.dto.request.CreateSubmissionForm;
-import com.kangui.talentsharehub.domain.homework.dto.request.RequestSubmission;
+import com.kangui.talentsharehub.domain.homework.dto.request.RequestUpdateSubmission;
 import com.kangui.talentsharehub.domain.homework.dto.response.ResponseSubmission;
 import com.kangui.talentsharehub.domain.homework.entity.Homework;
 import com.kangui.talentsharehub.domain.homework.entity.Submission;
@@ -65,8 +65,7 @@ public class SubmissionService {
         Submission submission = new Submission(
                 student,
                 homework,
-                createSubmissionForm.getContents(),
-                null
+                createSubmissionForm.getContents()
         );
 
         uploadFiles.stream()
@@ -80,7 +79,7 @@ public class SubmissionService {
     public Long updateSubmission(
             final Principal principal,
             final Long submissionId,
-            final RequestSubmission requestSubmission
+            final RequestUpdateSubmission requestSubmission
     ) {
         Submission submission = submissionRepository.findByIdWithStudent(submissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBMISSION_NOT_FOUND, "과제 제출이 존재하지 않습니다."));

@@ -12,6 +12,7 @@ import lombok.Getter;
 
 @Schema(description = "별점 추가 요청")
 @Getter
+@AllArgsConstructor
 public class RequestRating {
 
     @NotNull
@@ -19,8 +20,4 @@ public class RequestRating {
     @Max(value = 5, message = "별점은 5 이하이어야 합니다.")
     @Schema(description = "별점", example = "1")
     private final int rating;
-
-    public RequestRating(final int rating) {
-        this.rating = rating;
-    }
 }

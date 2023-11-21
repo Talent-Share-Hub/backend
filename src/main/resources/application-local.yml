@@ -77,12 +77,13 @@ file:
   course: course/
   user: user/
   homework: homework/
+  submission: submission/
 
 logging:
-  level:
-    org:
-      apache:
-        coyote:
-          http11: debug
+#  level:
+#    org:
+#      apache:
+#        coyote:
+#          http11: debug
       hibernate:
         SQL: debug

@@ -26,7 +26,7 @@ public class Course extends TimeStampedEntity {
     @JoinColumn(name = "teacher_id", referencedColumnName = "user_id")
     private Users user; // 선생님 ID
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category; // 카테고리 ID
 

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +36,7 @@ public class HomeworkAttachmentFileController {
     }
 
     @Operation(summary = "과제 첨부 파일 추가", description = "homework-id에 해당 하는 파일 추가")
-    @PostMapping("/homework/{homework-id}")
+    @PostMapping(value = "/homework/{homework-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> addAttachmentFileByHomeworkId(
             @AuthPrincipal final Principal principal,
             @PathVariable("homework-id") final Long homeworkId,

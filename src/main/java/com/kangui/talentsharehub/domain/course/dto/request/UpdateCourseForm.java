@@ -10,11 +10,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Schema(description = "강의 수정 요청")
 @Getter
 public class UpdateCourseForm {
@@ -81,7 +83,8 @@ public class UpdateCourseForm {
     }
 
     private void checkDateRange(final LocalDate startDate, final LocalDate endDate) {
-        if (!startDate.isAfter(endDate)) {
+        if (startDate.isAfter(endDate)) {
+            log.info("종료 일이 시작 일보다 빠를 수 없습니다.");
             throw new AppException(ErrorCode.INVALID_DATE_RANGE, "종료 일이 시작 일보다 빠를 수 없습니다.");
         }
     }

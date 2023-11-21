@@ -1,7 +1,7 @@
 package com.kangui.talentsharehub.domain.homework.controller;
 
 import com.kangui.talentsharehub.domain.homework.dto.request.CreateSubmissionForm;
-import com.kangui.talentsharehub.domain.homework.dto.request.RequestSubmission;
+import com.kangui.talentsharehub.domain.homework.dto.request.RequestUpdateSubmission;
 import com.kangui.talentsharehub.domain.homework.dto.response.ResponseSubmission;
 import com.kangui.talentsharehub.domain.homework.service.SubmissionService;
 import com.kangui.talentsharehub.global.login.resolver.annotation.AuthPrincipal;
@@ -10,10 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -36,7 +35,7 @@ public class SubmissionController {
     }
 
     @Operation(summary = "과제 제출 생성", description = "과제 제출 생성")
-    @PostMapping("/course/{course-id}/homework/{homework-id}")
+    @PostMapping(value = "/course/{course-id}/homework/{homework-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createSubmission(
             @AuthPrincipal Principal principal,
             @Valid @ModelAttribute final CreateSubmissionForm createSubmissionForm,
@@ -51,7 +50,7 @@ public class SubmissionController {
     public ResponseEntity<Long> updateSubmission(
             @AuthPrincipal Principal principal,
             @PathVariable("submission-id") Long submissionId,
-            @Valid @ModelAttribute RequestSubmission requestSubmission
+            @Valid @RequestBody RequestUpdateSubmission requestSubmission
     ) {
         return ResponseEntity.status(OK).body(submissionService.updateSubmission(principal, submissionId, requestSubmission));
     }

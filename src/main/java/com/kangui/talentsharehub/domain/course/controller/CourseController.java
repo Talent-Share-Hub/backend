@@ -33,10 +33,10 @@ public class CourseController {
 
     @Operation(summary = "모임 조회", description = "모임 조회 (검색, 카테고리별 필터링 가능, 페이지네이션)")
     @Parameters({
-            @Parameter(name = "search", description = "검색", example = "AWS 강의"),
-            @Parameter(name = "category", description = "카테고리", example = "프로그래밍"),
-            @Parameter(name = "page", description = "페이지", example = "1"),
-            @Parameter(name = "size", description = "크기", example = "10"),
+            @Parameter(name = "search", description = "검색", example = "AWS 강의", required = false),
+            @Parameter(name = "category", description = "카테고리", example = "프로그래밍", required = false),
+            @Parameter(name = "page", description = "페이지", example = "1", required = false),
+            @Parameter(name = "size", description = "크기", example = "10", required = false),
     })
     @GetMapping
     public ResponseEntity<Page<ResponseCoursePage>> getCoursePage(

@@ -17,12 +17,12 @@ public class UpdateUserByIdForm {
 
     @NotBlank
     @Size(min = 3, max = 15, message = "닉네임은 3자 이상 15자 이하이어야 합니다.")
-    @Schema(description = "닉네임")
+    @Schema(description = "닉네임", example = "newNickName")
     private final String nickname;
 
     @NotBlank
     @Size(max = 200, message = "소개는 200자 이하이어야 합니다.")
-    @Schema(description = "소개")
+    @Schema(description = "소개", example = "newIntroduction")
     private final String introduction;
 
     public UpdateUserByIdForm(

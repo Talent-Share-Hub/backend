@@ -55,6 +55,16 @@ public class Homework extends TimeStampedEntity {
         this.endDate = endDate;
     }
 
+    public Homework(
+            final Course course,
+            final String title,
+            final String contents,
+            final LocalDateTime startDate,
+            final LocalDateTime endDate
+    ) {
+        this(course, title, contents, new ArrayList<>(), startDate, endDate);
+    }
+
     public void addHomeworkAttachmentFile(final HomeworkAttachmentFile attachmentFile) {
         this.homeworkAttachmentFile.add(attachmentFile);
         attachmentFile.changeHomework(this);

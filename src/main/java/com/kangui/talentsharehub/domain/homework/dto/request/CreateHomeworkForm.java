@@ -30,15 +30,13 @@ public class CreateHomeworkForm {
     private final String contents;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @FutureOrPresent(message = "올바른 날짜를 입력 하세요.")
-    @Schema(description = "과제 시작일", example = "2023-12-15 11:22:24")
+    @Schema(description = "과제 시작일", example = "2023-12-15T11:22:24", type = "string")
     private final LocalDateTime startDate;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @FutureOrPresent(message = "올바른 날짜를 입력 하세요.")
-    @Schema(description = "과제 종료일", example = "2023-12-17 12:12:12")
+    @Schema(description = "과제 종료일", example = "2023-12-17T12:12:12", type = "string")
     private final LocalDateTime endDate;
 
     private final List<MultipartFile> attachmentFiles;
@@ -59,7 +57,7 @@ public class CreateHomeworkForm {
     }
 
     private void checkDateRange(final LocalDateTime startDate, final LocalDateTime endDate) {
-        if (!startDate.isAfter(endDate)) {
+        if (startDate.isAfter(endDate)) {
             throw new AppException(ErrorCode.INVALID_DATE_RANGE, "종료 일이 시작 일보다 빠를 수 없습니다.");
         }
     }

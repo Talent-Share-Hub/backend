@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class UserController {
     }
 
     @Operation(summary = "회원 정보 수정", description = "해당 user-id의 회원 정보 수정")
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateUser(
             @AuthPrincipal final Principal principal,
             @Valid@ModelAttribute final UpdateUserByIdForm updateUserByIdForm) {

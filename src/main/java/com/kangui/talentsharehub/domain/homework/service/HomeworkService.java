@@ -71,7 +71,6 @@ public class HomeworkService {
                 course,
                 createHomeworkForm.getTitle(),
                 createHomeworkForm.getContents(),
-                null,
                 createHomeworkForm.getStartDate(),
                 createHomeworkForm.getEndDate()
         );
