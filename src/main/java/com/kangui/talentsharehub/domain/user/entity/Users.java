@@ -104,4 +104,8 @@ public class Users extends TimeStampedEntity {
         this.nickname = requestAddInfo.getNickname();
         this.introduction = requestAddInfo.getIntroduction();
     }
+
+    public void removeRefreshToken() {
+        this.refreshToken = "none";
+    }
 }

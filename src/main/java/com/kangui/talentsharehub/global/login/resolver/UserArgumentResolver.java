@@ -37,7 +37,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         final String authorization = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
         final String accessToken = authorization.split(" ")[1];
 
-        final Long userId = jwtService.extractUserId(accessToken)
+        final Long userId = jwtService.extractUserIdFromAccessToken(accessToken)
                 .orElseThrow(() -> new AppException(ErrorCode.FAIL_AUTHENTICATION,
                                     "인증에 실패 했습니다. (JWT AccessToken Payload UserId 누락"));
 

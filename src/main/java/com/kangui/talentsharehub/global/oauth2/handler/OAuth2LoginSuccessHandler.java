@@ -51,7 +51,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
         String accessToken = jwtService.createAccessToken(oAuth2User.getUserId());
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(oAuth2User.getUserId());
 
         String redirectUri = UriComponentsBuilder.fromUriString(userRedirectUrl)
                                 .queryParam("accessToken", accessToken)
